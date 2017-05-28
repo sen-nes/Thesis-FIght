@@ -8,7 +8,7 @@ public class StatMultiply : IStatModifier
     // Properties
     public string Description { get; set; }
     public string Name { get; set; }
-    private float ModifierValue { get; set; }
+    public float ModifierValue { get; set; }
 
     // Constructors
     public StatMultiply(string _name, string _description, float _modifierValue)
@@ -19,9 +19,9 @@ public class StatMultiply : IStatModifier
     }
 
     // Methods
-    public int Apply(int baseStat)
+    public float Apply(float baseStat)
     {
-        int modifiedValue = (int)(baseStat * ModifierValue);
+        float modifiedValue = baseStat * ModifierValue;
         Debug.Log((baseStat * ModifierValue) + "/" + modifiedValue);
 
         return modifiedValue;

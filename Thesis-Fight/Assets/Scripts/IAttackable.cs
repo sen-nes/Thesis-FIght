@@ -1,9 +1,9 @@
 ﻿public interface IAttackable
 {
     int AttackPriority { get; set; }
-    int CurrentHealth { get; set; }
+    float CurrentHealth { get; set; }
 
-    void TakeDamage(int amount);
+    void TakeDamage(float amount);
 }
 
 public enum Priority

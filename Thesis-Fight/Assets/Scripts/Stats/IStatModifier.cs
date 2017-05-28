@@ -6,6 +6,7 @@ public interface IStatModifier
 {
     string Name { get; set; }
     string Description { get; set; }
+    float ModifierValue { get; set; }
 
-    int Apply(int baseStat);
+    float Apply(float baseStat);
 }

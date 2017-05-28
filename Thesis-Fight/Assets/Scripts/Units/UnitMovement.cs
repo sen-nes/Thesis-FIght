@@ -31,6 +31,7 @@ public class UnitMovement : MonoBehaviour, IBoid
     // Targets
     private Transform enemyCastle;
     private UnitCombat unitCombat;
+    private UnitStats unitStats;
 
     // Unit stats for move speed
 
@@ -47,10 +48,10 @@ public class UnitMovement : MonoBehaviour, IBoid
             }
         }
         Vector3 attackCastleSide = (enemyCastle.position - transform.position).normalized * 5;
-
         PathRequestManager.RequestPath(new PathRequest(transform.position, enemyCastle.position - attackCastleSide, OnPathFound));
 
         steer = new SteeringManager(this);
+        unitStats = GetComponent<UnitStats>();
         unitCombat = GetComponent<UnitCombat>();
 
         Speed = 10.0f;
@@ -83,12 +84,29 @@ public class UnitMovement : MonoBehaviour, IBoid
     {
         if (!unitCombat.target)
         {
-            steer.FollowPath();
+            if (Path != null)
+            {
+                transform.LookAt(Path.Peek());
+            }
 
+            steer.FollowPath();
         }
         else
         {
-            steer.Arrive(unitCombat.target.position);
+            Vector3 closestPoint = unitCombat.GetClosestPoint();
+            float range = unitStats.Range.FinalValue / 100.0f;
+            float distance = (closestPoint - transform.position).magnitude;
+
+            if (distance > range)
+            {
+                steer.Arrive(closestPoint);
+            }
+            else
+            {
+                Velocity = Vector3.zero;
+            }
+
+            transform.LookAt(closestPoint);
         }
 
         steer.Update();

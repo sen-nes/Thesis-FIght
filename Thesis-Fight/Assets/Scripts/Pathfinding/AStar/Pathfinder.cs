@@ -6,24 +6,16 @@ using System;
 
 public class Pathfinder : MonoBehaviour
 {
-
-    private Grid grid;
-
-    private void Awake()
-    {
-        grid = GetComponent<Grid>();
-    }
-
     public void FindPath(PathRequest request, Action<PathResult> callback)
     {
         Vector3[] waypoints = new Vector3[0];
         bool pathFound = false;
 
-        Node startNode = grid.NodeFromPoint(request.pathStart);
-        Node targetNode = grid.NodeFromPoint(request.pathTarget);
+        Node startNode = Grid.instance.NodeFromPoint(request.pathStart);
+        Node targetNode = Grid.instance.NodeFromPoint(request.pathTarget);
         if (/*startNode.walkable &&*/ targetNode.walkable)
         {
-            Heap<Node> open = new Heap<Node>(grid.NodeCount);
+            Heap<Node> open = new Heap<Node>(Grid.instance.NodeCount);
             HashSet<Node> closed = new HashSet<Node>();
 
             open.Add(startNode);
@@ -38,7 +30,7 @@ public class Pathfinder : MonoBehaviour
                     break;
                 }
 
-                foreach (Node neighbour in grid.GetNeighbours(currentNode))
+                foreach (Node neighbour in Grid.instance.GetNeighbours(currentNode))
                 {
                     if (!neighbour.walkable || closed.Contains(neighbour))
                     {

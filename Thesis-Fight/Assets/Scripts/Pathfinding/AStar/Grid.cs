@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class Grid : MonoBehaviour
 {
+    public static Grid instance;
+
     public bool drawGizmos;
     public Vector2 gridSize;
     public float nodeSize;
@@ -24,6 +26,12 @@ public class Grid : MonoBehaviour
 
     private void Awake()
     {
+        if (instance != null)
+        {
+            Debug.Log("Instance is already instantiated!");
+        }
+        instance = this;
+
         unwalkableMask = LayerMask.GetMask("Unwalkable");
         nodeRadius = nodeSize / 2;
         nodeCountX = Mathf.RoundToInt(gridSize.x / nodeSize);
@@ -108,5 +116,23 @@ public class Grid : MonoBehaviour
                 Gizmos.DrawWireCube(node.position, Vector3.one * (nodeSize - .1f));
             }
         }
+    }
+
+    public Node[,] Subgrid(int X, int Y, Vector3 pos)
+    {
+        Node[,] subGrid = new Node[X * 2 + 1, Y * 2 + 1];
+        Node centerNode = NodeFromPoint(pos);
+
+        for (int x = -X; x <= X; x++)
+        {
+            for (int y = -Y; y <= Y; y++)
+            {
+                int neighX = centerNode.gridX + x;
+                int neighY = centerNode.gridY + y;
+                subGrid[x + X, y + Y] = grid[neighX, neighY];
+            }
+        }
+
+        return subGrid;
     }
 }

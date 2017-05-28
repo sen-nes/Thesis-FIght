@@ -1,28 +1,33 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.AI;
 
-public class BuildingController : MonoBehaviour, IBuilding
-{
-    public int Cost { get; set; }
-    public int IncomeValue { get; set; }
-    public Stat Health { get; set; }
-    public Stat Armor { get; set; }
-    public ArmorType buildingArmorType { get; set; }
-    public string Owner { get; set; }
-    public bool IsSpecial { get; set; }
+public class BuildingController : MonoBehaviour, IBuilding {
 
     public GameObject unit;
-    private NavMeshObstacle obstacles;
+    public Transform unitParent;
 
-    private void Awake()
+    // Unit property?
+    public float spawnTime;
+
+    // ???
+    private bool isSpawning;
+
+    private void Start()
     {
-        InvokeRepeating("Spawn", 2f, 2f);
+        unit = Resources.Load<GameObject>("Units/Unit East");
+        unitParent = GameObject.Find("Units").transform;
+        isSpawning = false;
     }
 
-    private void Spawn()
+    public void SpawnUnit()
     {
-        Instantiate(unit, transform.position + Vector3.one, Quaternion.identity, GameObject.Find("Units").transform);
+        Instantiate(unit, transform.position, Quaternion.identity, unitParent);
+    }
+
+    public void StartSpawning()
+    {
+        InvokeRepeating("SpawnUnit", 2.0f, spawnTime);
+        isSpawning = true;
     }
 }
