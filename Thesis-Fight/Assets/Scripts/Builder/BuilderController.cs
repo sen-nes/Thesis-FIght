@@ -1,7 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.AI;
+﻿using UnityEngine;
 
 public class BuilderController : MonoBehaviour
 {
@@ -11,6 +8,13 @@ public class BuilderController : MonoBehaviour
 
     private bool isBuilding;
     private GameObject currentBuilding;
+    private Vector3 placementOffset;
+
+    public Material originalMaterial;
+    public Material buildingOK;
+    public Material buildingError;
+
+    // Create IBuilding field
 
     private void Start()
     {
@@ -18,6 +22,10 @@ public class BuilderController : MonoBehaviour
         isBuilding = false;
 
         building = Resources.Load<GameObject>("Buildings/Building East");
+        placementOffset = Vector3.zero;//new Vector3(Grid.instance.nodeSize / 2, 0.0f, Grid.instance.nodeSize / 2);
+
+        buildingOK = Resources.Load<Material>("Materials/building_OK");
+        buildingError = Resources.Load<Material>("Materials/building_NOT_OK");
     }
 
     private void Update()
@@ -48,42 +56,57 @@ public class BuilderController : MonoBehaviour
 
     private void StartBuilding(int buildingIndex)
     {
-        Debug.Log("Building...");
         Vector3 worldPoint = GetWorldPoint();
 
-        worldPoint = Grid.instance.NodeFromPoint(worldPoint).position;
+        worldPoint = Grid.instance.NodeFromPoint(worldPoint).position - placementOffset;
         currentBuilding = Instantiate(building, worldPoint, Quaternion.identity);
+        currentBuilding.transform.SetParent(GameObject.Find("Buildings").transform);
+        originalMaterial = currentBuilding.transform.Find("Model").GetComponent<MeshRenderer>().material;
 
         isBuilding = true;
     }
 
     private void MoveBuilding()
     {
-        Debug.Log("Moved!");
         Vector3 worldPoint = GetWorldPoint();
 
-        worldPoint = Grid.instance.NodeFromPoint(worldPoint).position;
+        worldPoint = Grid.instance.NodeFromPoint(worldPoint).position - placementOffset;
         currentBuilding.transform.position = worldPoint;
+
+        if (currentBuilding.GetComponent<IBuilding>().CanBuild)
+        {
+            currentBuilding.transform.Find("Model").GetComponent<MeshRenderer>().material = buildingOK;
+        }
+        else
+        {
+            currentBuilding.transform.Find("Model").GetComponent<MeshRenderer>().material = buildingError;
+        }
     }
 
     private void PlaceBuilding()
     {
-        Vector3 worldPoint = GetWorldPoint();
+        if (currentBuilding.GetComponent<IBuilding>().CanBuild)
+        {
+            Vector3 worldPoint = GetWorldPoint();
+            worldPoint = Grid.instance.NodeFromPoint(worldPoint).position - placementOffset;
 
-        worldPoint = Grid.instance.NodeFromPoint(worldPoint).position;
+            currentBuilding.GetComponent<IBuilding>().StartSpawning();
+            currentBuilding.GetComponent<IBuilding>().HidePlacementGrid();
 
-        Debug.Log("Placed building at " + worldPoint);
-        currentBuilding.transform.SetParent(GameObject.Find("Buildings").transform);
-        currentBuilding.GetComponent<IBuilding>().StartSpawning();
+            currentBuilding.GetComponent<IBuilding>().UpdateGrid();
 
-        isBuilding = false;
-        currentBuilding = null;
+            currentBuilding.transform.Find("Model").GetComponent<MeshRenderer>().material = originalMaterial;
+            isBuilding = false;
+            currentBuilding = null;
+        }
+        else
+        {
+            Debug.Log("Can't build at this point.");
+        }
     }
 
     private void CancelBuilding()
     {
-        Debug.Log("Canceled building!");
-
         if (currentBuilding != null)
         {
             Destroy(currentBuilding);

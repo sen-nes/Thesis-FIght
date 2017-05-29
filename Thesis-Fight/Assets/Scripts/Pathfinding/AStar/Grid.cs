@@ -13,6 +13,7 @@ public class Grid : MonoBehaviour
     private int unwalkableMask;
     private Node[,] grid;
     private float nodeRadius;
+    private float radiusOffset;
     private int nodeCountX;
     private int nodeCountY;
 
@@ -34,6 +35,7 @@ public class Grid : MonoBehaviour
 
         unwalkableMask = LayerMask.GetMask("Unwalkable");
         nodeRadius = nodeSize / 2;
+        radiusOffset = 0.01f;
         nodeCountX = Mathf.RoundToInt(gridSize.x / nodeSize);
         nodeCountY = Mathf.RoundToInt(gridSize.y / nodeSize);
         CreateGrid();
@@ -54,7 +56,7 @@ public class Grid : MonoBehaviour
             for (int y = 0; y < nodeCountY; y++)
             {
                 Vector3 point = bottomLeft + Vector3.right * (x * nodeSize + nodeRadius) + Vector3.forward * (y * nodeSize + nodeRadius);
-                bool walkable = !(Physics.CheckSphere(point, nodeRadius, unwalkableMask));
+                bool walkable = !(Physics.CheckSphere(point, nodeRadius - radiusOffset, unwalkableMask));
                 grid[x, y] = new Node(walkable, point, x, y);
             }
         }
@@ -134,5 +136,46 @@ public class Grid : MonoBehaviour
         }
 
         return subGrid;
+    }
+
+    public void UpdateGridRegion(int X, int Y, Vector3 pos)
+    {
+        Debug.Log(X + ", " + Y);
+        Node placementNode = NodeFromPoint(pos);
+
+        for (int x = -X; x <= X; x++)
+        {
+            for (int y = -Y; y <= Y; y++)
+            {
+                int neighX = placementNode.gridX + x;
+                int neighY = placementNode.gridY + y;
+
+                Node node = grid[neighX, neighY];
+
+                bool walkable = !(Physics.CheckSphere(node.position, nodeRadius - radiusOffset, unwalkableMask));
+                node.walkable = walkable;
+            }
+        }
+    }
+
+    public bool CheckGridRegion(int X, int Y, Vector3 pos)
+    {
+        Debug.Log(X + ", " + Y);
+        Node placementNode = NodeFromPoint(pos);
+
+        for (int x = -X; x <= X; x++)
+        {
+            for (int y = -Y; y <= Y; y++)
+            {
+                int neighX = placementNode.gridX + x;
+                int neighY = placementNode.gridY + y;
+
+                if (!grid[neighX, neighY].walkable) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
     }
 }
