@@ -21,26 +21,34 @@ public class BuildingController : MonoBehaviour, IBuilding {
     // ???
     private bool isSpawning;
     private PlacementGrid grid;
+    private Transform spawnPoint;
 
     private void Start()
     {
-        unit = Resources.Load<GameObject>("Units/Unit East");
+        //unit = Resources.Load<GameObject>("Units/Unit East");
         unitParent = GameObject.Find("Units").transform;
         isSpawning = false;
         grid = GetComponent<PlacementGrid>();
 
         bounds = GetComponent<Collider>().bounds.size;
+        spawnPoint = transform.Find("Spawn Point");
     }
 
     public void SpawnUnits()
     {
-        Instantiate(unit, transform.position, Quaternion.identity, unitParent);
+        Instantiate(unit, spawnPoint.position, Quaternion.identity, unitParent);
     }
 
     public void StartSpawning()
     {
         InvokeRepeating("SpawnUnits", 2.0f, spawnTime);
         isSpawning = true;
+    }
+
+    public void StopSpawning()
+    {
+        CancelInvoke();
+        isSpawning = false;
     }
 
     public void UpdateGrid()

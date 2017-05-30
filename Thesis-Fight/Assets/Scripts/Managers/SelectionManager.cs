@@ -5,9 +5,9 @@ using UnityEngine;
 
 public class SelectionManager : MonoBehaviour
 {
-
+    public static SelectionManager instance;
+    public bool IsBuilding { get; set; }
     // public GameObject selectionPlane;
-    //private static SelectionManager instance;
 
     private int selectableMask;
     private List<Selectable> selectedUnits;
@@ -15,13 +15,13 @@ public class SelectionManager : MonoBehaviour
 
     private void Start()
     {
-        //instance = this;
+        instance = this;
         selectableMask = LayerMask.GetMask("Selectable");
     }
 
     private void Update()
     {
-        if (Input.GetMouseButtonDown((int)MouseButton.MB_LEFT))
+        if (Input.GetMouseButtonDown((int)MouseButton.MB_LEFT) && !IsBuilding)
         {
             CheckSelection(Input.mousePosition);
         }

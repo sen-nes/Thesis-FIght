@@ -10,7 +10,7 @@ public class CastleStats : MonoBehaviour {
 
     private void Awake()
     {
-        Health = new Stat("Health", "How much health the unit has.", 200);
+        Health = new Stat("Health", "How much health the unit has.", 1000);
         // Armor
         // ArmorType
     }

@@ -5,6 +5,7 @@ using UnityEngine;
 public class UnitMovement : MonoBehaviour, IBoid
 {
     public bool displayPath;
+    public bool displayForces;
 
     // Boid
     public Vector3 Velocity { get; set; }
@@ -54,7 +55,7 @@ public class UnitMovement : MonoBehaviour, IBoid
         unitStats = GetComponent<UnitStats>();
         unitCombat = GetComponent<UnitCombat>();
 
-        Speed = 10.0f;
+        Speed = 5.0f;
         Mass = 10.0f;
         SlowDownRadius = 10.0f;
         Force = 5.0f;
@@ -86,10 +87,11 @@ public class UnitMovement : MonoBehaviour, IBoid
         {
             if (Path != null)
             {
-                transform.LookAt(Path.Peek());
+                transform.LookAt(transform.position + Velocity);
             }
 
             steer.FollowPath();
+            steer.Avoid();
         }
         else
         {
@@ -106,14 +108,37 @@ public class UnitMovement : MonoBehaviour, IBoid
                 Velocity = Vector3.zero;
             }
 
-            transform.LookAt(closestPoint);
+            transform.LookAt(transform.position + Velocity);
         }
-
+        steer.Avoid();
         steer.Update();
     }
 
     private void OnDrawGizmos()
     {
+        if (steer != null && displayForces)
+        {
+            // Velocity
+            Gizmos.color = Color.green;
+            // Gizmos.DrawLine(transform.position, transform.position + steer.forces.velocity);
+
+            // Desired
+            Gizmos.color = Color.black;
+            // Gizmos.DrawLine(transform.position, transform.position + steer.forces.targetVelocity);
+
+            // Steering
+            Gizmos.color = Color.blue;
+            //Gizmos.DrawLine(transform.position, transform.position + steer.forces.seek);
+
+            // Look ahead
+            Gizmos.color = Color.magenta;
+            Gizmos.DrawLine(transform.position, transform.position + steer.forces.lookAhead);
+
+            // Avoid
+            Gizmos.color = Color.red;
+            Gizmos.DrawLine(transform.position, transform.position + steer.forces.avoid);
+        }
+
         if (Path != null && displayPath)
         {
             Vector3[] waypoints = Path.ToArray();

@@ -2,17 +2,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.AI;
 
-public enum MouseButtonDown
-{
-    MBD_LEFT = 0,
-    MBD_RIGHT,
-    MBD_MIDDLE,
-};
-
-public class BuilderMovement : MonoBehaviour, IBoid
-{
+public class TestMover : MonoBehaviour, IBoid {
     public bool displayPath;
     public bool displayForces;
 
@@ -37,14 +28,12 @@ public class BuilderMovement : MonoBehaviour, IBoid
     }
 
     private SteeringManager steer;
-    private Selectable selectable;
 
     private void Start()
     {
         steer = new SteeringManager(this);
-        selectable = transform.Find("Selectable").GetComponent<Selectable>();
 
-        Speed = 10.0f;
+        Speed = 5.0f;
         Mass = 10.0f;
         SlowDownRadius = 10.0f;
         Force = 15.0f;
@@ -67,42 +56,16 @@ public class BuilderMovement : MonoBehaviour, IBoid
 
     private void Update()
     {
-        if (selectable.selected)
+        if(Input.GetMouseButton((int)MouseButton.MB_RIGHT))
         {
-            if (Input.GetMouseButton((int)MouseButton.MB_RIGHT))
-            {
-                Vector3 destination = steer.GetMousePoint(Input.mousePosition);
-                // Consider returning a stuct
-                if (destination != Vector3.zero)
-                {
-                    PathRequestManager.RequestPath(new PathRequest(transform.position, destination, OnPathFound));
-                }
-            }
-
-            if (Input.GetKeyUp(KeyCode.F))
-            {
-                Flash();
-            }
+            PathRequestManager.RequestPath(new PathRequest(transform.position, steer.GetMousePoint(Input.mousePosition), OnPathFound));
         }
 
-        steer.FollowPath();
-        // steer.SeekMouse();
+        // steer.FollowPath();
+        steer.SeekMouse();
         steer.Avoid();
         steer.Update();
         transform.LookAt(transform.position + Velocity);
-    }
-
-    private void Flash()
-    {
-        Vector3 targetPosition = steer.GetMousePoint(Input.mousePosition);
-
-        //Border case?
-        if (targetPosition != Vector3.zero)
-        {
-            transform.position = targetPosition;
-            Velocity = Vector3.zero;
-            Path = null;
-        }
     }
 
     private void OnDrawGizmos()
@@ -111,15 +74,15 @@ public class BuilderMovement : MonoBehaviour, IBoid
         {
             // Velocity
             Gizmos.color = Color.green;
-            // Gizmos.DrawLine(transform.position, transform.position + steer.forces.velocity);
+           // Gizmos.DrawLine(transform.position, transform.position + steer.forces.velocity);
 
             // Desired
             Gizmos.color = Color.black;
-            // Gizmos.DrawLine(transform.position, transform.position + steer.forces.targetVelocity);
+           // Gizmos.DrawLine(transform.position, transform.position + steer.forces.targetVelocity);
 
             // Steering
             Gizmos.color = Color.blue;
-            //Gizmos.DrawLine(transform.position, transform.position + steer.forces.seek);
+           //Gizmos.DrawLine(transform.position, transform.position + steer.forces.seek);
 
             // Look ahead
             Gizmos.color = Color.magenta;

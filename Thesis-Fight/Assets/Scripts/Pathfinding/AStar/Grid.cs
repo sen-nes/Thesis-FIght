@@ -129,9 +129,18 @@ public class Grid : MonoBehaviour
         {
             for (int y = -Y; y <= Y; y++)
             {
-                int neighX = centerNode.gridX + x;
-                int neighY = centerNode.gridY + y;
-                subGrid[x + X, y + Y] = grid[neighX, neighY];
+                int checkX = centerNode.gridX + x;
+                int checkY = centerNode.gridY + y;
+
+                if (checkX >= 0 && checkX < nodeCountX && checkY >= 0 && checkY < nodeCountY)
+                {
+                    subGrid[x + X, y + Y] = grid[checkX, checkY];
+                }
+                else
+                {
+                    subGrid[x + X, y + Y] = null;
+                }
+                
             }
         }
 
@@ -140,20 +149,25 @@ public class Grid : MonoBehaviour
 
     public void UpdateGridRegion(int X, int Y, Vector3 pos)
     {
-        Debug.Log(X + ", " + Y);
         Node placementNode = NodeFromPoint(pos);
 
         for (int x = -X; x <= X; x++)
         {
             for (int y = -Y; y <= Y; y++)
             {
-                int neighX = placementNode.gridX + x;
-                int neighY = placementNode.gridY + y;
 
-                Node node = grid[neighX, neighY];
+                int checkX = placementNode.gridX + x;
+                int checkY = placementNode.gridY + y;
 
-                bool walkable = !(Physics.CheckSphere(node.position, nodeRadius - radiusOffset, unwalkableMask));
-                node.walkable = walkable;
+                if (checkX >= 0 && checkX < nodeCountX && checkY >= 0 && checkY < nodeCountY)
+                {
+                    Node node = grid[checkX, checkY];
+
+                    bool walkable = !(Physics.CheckSphere(node.position, nodeRadius - radiusOffset, unwalkableMask));
+                    node.walkable = walkable;
+                }
+
+                
             }
         }
     }

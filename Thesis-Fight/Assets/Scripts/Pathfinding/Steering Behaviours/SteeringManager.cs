@@ -44,7 +44,8 @@ public class SteeringManager
     public void SeekMouse()
     {
         Vector3 mouse = GetMousePoint(Input.mousePosition);
-        Seek(mouse);
+        //Seek(mouse);
+        Arrive(mouse);
     }
 
     public void Seek(Vector3 target)
@@ -64,29 +65,58 @@ public class SteeringManager
     public void Avoid()
     {
         Vector3 force = Vector3.zero;
-        float aheadModifier = boid.Velocity.magnitude / boid.Speed;
         Vector3 ahead = boid.Velocity.normalized * boid.Speed * 2;
-        //ahead *= aheadModifier;
-        forces.lookAhead = ahead;
-        Transform obstacle = FindObstacle(ahead);
+        float aheadModifier = boid.Velocity.magnitude / boid.Speed;
 
-        if (obstacle != null)
+        ahead *= aheadModifier;
+        forces.lookAhead = ahead;
+        Obstacle obstacle = FindObstacle(ahead);
+
+        if (obstacle.hit)
         {
-            Debug.Log("Avoiding " + obstacle.name);
+            //Debug.Log("Avoiding " + obstacle.name);
             //force.x = ahead.x - obstacle.position.x;
             //force.z = ahead.z - obstacle.position.z;
-            force = ahead - obstacle.position;
+            force = obstacle.pointOfImpact - obstacle.center;
 
-            force = force.normalized * 30.0f;//boid.Force;
+            force = force.normalized * (15.0f * aheadModifier);//boid.Force;
         }
         else
         {
             force = Vector3.zero;
         }
 
+
+
         steering += force;
         forces.avoid = force;
     }
+
+    struct Obstacle
+    {
+        public Vector3 center;
+        public Vector3 pointOfImpact;
+        public bool hit;
+
+        public Obstacle(Vector3 _center, Vector3 _point, bool _hit)
+        {
+            center = _center;
+            pointOfImpact = _point;
+            hit = _hit;
+        }
+    }
+    private Obstacle FindObstacle(Vector3 ahead)
+    {
+        RaycastHit hit;
+        if (Physics.SphereCast(boid.Position, 0.5f, ahead, out hit, ahead.magnitude))
+        {
+            Obstacle obstacle = new Obstacle(hit.transform.position, hit.point, true);
+            return obstacle;
+        }
+
+        return new Obstacle(Vector3.zero, Vector3.zero, false);
+    }
+
 
     public void FollowPath()
     {
@@ -146,18 +176,6 @@ public class SteeringManager
 
         forces.seek = force;
         forces.targetVelocity = targetVelocity;
-    }
-
-    private Transform FindObstacle(Vector3 ahead)
-    {
-        RaycastHit obstacle;
-        if (Physics.SphereCast(boid.Position, 2.0f, boid.Position + ahead, out obstacle))
-        {
-            Debug.Log(obstacle.transform.name);
-            return obstacle.transform;
-        }
-
-        return null;
     }
 
     public Vector3 GetMousePoint(Vector3 mousePos)

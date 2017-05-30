@@ -61,11 +61,12 @@ public class PlacementGrid : MonoBehaviour
         {
             for (int y = 0; y < sizeY * 2 + 1; y++)
             {
-                if (!grid[x, y].walkable)
+                if (grid[x, y] != null && !grid[x, y].walkable)
                 {
                     placementGrid[x, y].SetActive(true);
                     placementGrid[x, y].transform.position = grid[x, y].position + offset;
                     placementGrid[x, y].GetComponent<MeshRenderer>().material.color = Color.grey;
+
                 }
                 else
                 {
@@ -106,21 +107,27 @@ public class PlacementGrid : MonoBehaviour
                 int checkX = sizeX - x;
                 int checkY = sizeY - y;
 
-                placementGrid[checkX, checkY].SetActive(true);
-                placementGrid[checkX, checkY].transform.position = grid[checkX, checkY].position + offset;
-
-                Color buildable;
-                if (grid[checkX, checkY].walkable)
+                if (grid[checkX, checkY] != null)
                 {
-                    buildable = Color.green;
+                    placementGrid[checkX, checkY].SetActive(true);
+                    placementGrid[checkX, checkY].transform.position = grid[checkX, checkY].position + offset;
+
+                    Color buildable;
+                    if (grid[checkX, checkY].walkable)
+                    {
+                        buildable = Color.green;
+                    }
+                    else
+                    {
+                        buildable = Color.red;
+                        canBuild = false;
+                    }
+                    placementGrid[checkX, checkY].GetComponent<MeshRenderer>().material.color = buildable;
                 }
                 else
                 {
-                    buildable = Color.red;
                     canBuild = false;
                 }
-
-                placementGrid[checkX, checkY].GetComponent<MeshRenderer>().material.color = buildable;
             }
         }
     }

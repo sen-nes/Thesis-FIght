@@ -14,6 +14,8 @@ public class BuilderController : MonoBehaviour
     public Material buildingOK;
     public Material buildingError;
 
+    public int playerID;
+
     // Create IBuilding field
 
     private void Start()
@@ -21,11 +23,12 @@ public class BuilderController : MonoBehaviour
         floorMask = LayerMask.GetMask("Floor");
         isBuilding = false;
 
-        building = Resources.Load<GameObject>("Buildings/Building East");
         placementOffset = Vector3.zero;//new Vector3(Grid.instance.nodeSize / 2, 0.0f, Grid.instance.nodeSize / 2);
 
         buildingOK = Resources.Load<Material>("Materials/building_OK");
         buildingError = Resources.Load<Material>("Materials/building_NOT_OK");
+
+        playerID = 0;
     }
 
     private void Update()
@@ -48,7 +51,18 @@ public class BuilderController : MonoBehaviour
         {
             if (Input.GetKeyUp(KeyCode.Q))
             {
-                StartBuilding(0);
+                if (GoldManager.instance.HasGold(0, 300))
+                {
+                    StartBuilding(0);
+                }
+            }
+
+            if (Input.GetKeyUp(KeyCode.W))
+            {
+                if (GoldManager.instance.HasGold(0, 300))
+                {
+                    StartBuilding(1);
+                }
             }
         }
     }
@@ -58,12 +72,22 @@ public class BuilderController : MonoBehaviour
     {
         Vector3 worldPoint = GetWorldPoint();
 
+        if (buildingIndex == 0)
+        {
+            building = Resources.Load<GameObject>("Buildings/Building East");
+        }
+        else
+        {
+            building = Resources.Load<GameObject>("Buildings/Building West");
+        }
+
         worldPoint = Grid.instance.NodeFromPoint(worldPoint).position - placementOffset;
         currentBuilding = Instantiate(building, worldPoint, Quaternion.identity);
         currentBuilding.transform.SetParent(GameObject.Find("Buildings").transform);
         originalMaterial = currentBuilding.transform.Find("Model").GetComponent<MeshRenderer>().material;
 
         isBuilding = true;
+        SelectionManager.instance.IsBuilding = true;
     }
 
     private void MoveBuilding()
@@ -97,7 +121,11 @@ public class BuilderController : MonoBehaviour
 
             currentBuilding.transform.Find("Model").GetComponent<MeshRenderer>().material = originalMaterial;
             isBuilding = false;
+            SelectionManager.instance.IsBuilding = false;
             currentBuilding = null;
+
+            GoldManager.instance.Pay(0, 300);
+            GoldManager.instance.AddIncome(0, (int)(300 * 0.1f));
         }
         else
         {
@@ -114,6 +142,7 @@ public class BuilderController : MonoBehaviour
         }
 
         isBuilding = false;
+        SelectionManager.instance.IsBuilding = false;
     }
 
     private Vector3 GetWorldPoint()

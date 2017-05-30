@@ -28,15 +28,15 @@ public class CastleCombat : MonoBehaviour, IAttackable {
 
         if (CurrentHealth <= 0)
         {
-            currentHealth = 1;
-            //Die();
+            //currentHealth = 1;
+            Die();
         }
     }
 
     private void Die()
     {
         // Do victory stuff
-
+        VictoryManager.instance.DeclareDefeat(GetComponent<Details>().teamID);
         Destroy(gameObject);
     }
 }
