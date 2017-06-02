@@ -13,6 +13,7 @@ public class UnitCombat : MonoBehaviour, IAttackable
     public float currentHealth;
 
     public Image healthBar;
+    private Animator anim;
 
     // Attackable
     public float CurrentHealth { get { return currentHealth; } set { currentHealth = value; } }
@@ -34,6 +35,8 @@ public class UnitCombat : MonoBehaviour, IAttackable
         lastAttack = 0.0f;
         CurrentHealth = unitStats.Health.FinalValue;
         AttackPriority = (int)Priority.UNIT;
+
+        anim = transform.Find("Model").GetComponent<Animator>();
     }
 
     private void Update()
@@ -56,35 +59,55 @@ public class UnitCombat : MonoBehaviour, IAttackable
             }
         }
     }
-
+    
     private void Attack()
     {
         // Closest, consider making it a field
         Vector3 closestPoint = GetClosestPoint();
         float distanceToTarget = (closestPoint - transform.position).magnitude * 100;
-
+        //float centerToBounds = target.transform.g
         if (distanceToTarget <= unitStats.Range.FinalValue)
         {
-            float attackSpeed = unitStats.AttackSpeed.FinalValue;
-            lastAttack += Time.deltaTime * 1000;
-
-            // Consider returning wheather target is dead in TakeDamage()
             
-            if (targetAttackable.CurrentHealth > 0)
-            {
-                if (lastAttack >= attackSpeed)
-                {
-                    float attackDamage = unitStats.AttackDamage.FinalValue;
+            //float attackSpeed = unitStats.AttackSpeed.FinalValue;
+            //lastAttack += Time.deltaTime * 1000;
 
-                    targetAttackable.TakeDamage(attackDamage);
-                    lastAttack = 0.0f;
-                }
-            }
-            else
-            {
-                targetAttackable = null;
-                target = null;
-            }
+            //// Consider returning wheather target is dead in TakeDamage()
+
+            //if (targetAttackable.CurrentHealth > 0)
+            //{
+            //    if (lastAttack >= attackSpeed)
+            //    {
+            //        float attackDamage = unitStats.AttackDamage.FinalValue;
+
+            //        //anim.SetTrigger("Attack");
+            //        
+            //        targetAttackable.TakeDamage(attackDamage);
+            //        lastAttack = 0.0f;
+            //    }
+            //}
+            //else
+            //{
+            //    targetAttackable = null;
+            //    target = null;
+            //}
+        }
+    }
+
+    public void OnAttack()
+    {
+        if (targetAttackable.CurrentHealth > 0)
+        {
+            float attackDamage = unitStats.AttackDamage.FinalValue;
+            targetAttackable.TakeDamage(attackDamage);
+        }
+        else
+        {
+            targetAttackable = null;
+            target = null;
+            anim.SetBool("Running", true);
+            anim.SetFloat("Attack Speed", 0);
+            
         }
     }
 
@@ -149,7 +172,12 @@ public class UnitCombat : MonoBehaviour, IAttackable
 
     private void Die()
     {
+        ISelectable selectable = transform.Find("Selectable").GetComponent<ISelectable>();
         // Clean up after unit
+        if (selectable.Selected)
+        {
+            SelectionManager.instance.OnDeath(selectable);
+        }
 
         Destroy(gameObject);
     }

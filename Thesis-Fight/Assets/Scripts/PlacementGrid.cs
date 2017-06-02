@@ -15,7 +15,7 @@ public class PlacementGrid : MonoBehaviour
     private Node[,] grid;
     private GameObject[,] placementGrid;
     private GameObject gridParent;
-    private Vector3 offset = new Vector3(0.0f, 0.01f, 0.0f);
+    private Vector3 offset = new Vector3(0.0f, 0.02f, 0.0f);
     private BuildingController buildingController;
 
     private void Start()

@@ -24,5 +24,6 @@ public class UnitStats : MonoBehaviour
         AttackDamage = new Stat("Attack damage", "How much damage the unit deals.", 10);
         AttackSpeed = new Stat("Attack speed", "How frequently the unit can attack.", 500);
         Range = new Stat("Range", "Distance the unit can attack from.", 100);
+        Armor = new Stat("Armor", "Defense.", 5);
     }
 }

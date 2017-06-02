@@ -6,6 +6,9 @@ public class UnitMovement : MonoBehaviour, IBoid
 {
     public bool displayPath;
     public bool displayForces;
+    public Vector3 EnemyCastle;
+
+    public Animator anim;
 
     // Boid
     public Vector3 Velocity { get; set; }
@@ -30,7 +33,7 @@ public class UnitMovement : MonoBehaviour, IBoid
     private SteeringManager steer;
 
     // Targets
-    private Transform enemyCastle;
+    
     private UnitCombat unitCombat;
     private UnitStats unitStats;
 
@@ -38,26 +41,15 @@ public class UnitMovement : MonoBehaviour, IBoid
 
     private void Start()
     {
-        // find enemy castle in method
-        GameObject[] castles = GameObject.FindGameObjectsWithTag("Castle");
-
-        foreach (GameObject castle in castles)
-        {
-            if (castle.GetComponent<Details>().teamID != GetComponent<Details>().teamID)
-            {
-                enemyCastle = castle.transform;
-            }
-        }
-        Vector3 attackCastleSide = (enemyCastle.position - transform.position).normalized * 5;
-        PathRequestManager.RequestPath(new PathRequest(transform.position, enemyCastle.position - attackCastleSide, OnPathFound));
-
+        PathRequestManager.RequestPath(new PathRequest(transform.position, EnemyCastle, OnPathFound));
+        anim = transform.Find("Model").GetComponent<Animator>();
         steer = new SteeringManager(this);
         unitStats = GetComponent<UnitStats>();
         unitCombat = GetComponent<UnitCombat>();
 
-        Speed = 5.0f;
+        Speed = 10.0f;
         Mass = 10.0f;
-        SlowDownRadius = 10.0f;
+        SlowDownRadius = 2.0f;
         Force = 5.0f;
     }
 
@@ -67,6 +59,7 @@ public class UnitMovement : MonoBehaviour, IBoid
         {
             Array.Reverse(path);
             Path = new Stack<Vector3>(path);
+            anim.SetBool("Running", true);
             //StopCoroutine("FollowPath");
             //StartCoroutine("FollowPath");
         }
@@ -83,33 +76,32 @@ public class UnitMovement : MonoBehaviour, IBoid
 
     private void Move()
     {
-        if (!unitCombat.target)
+        if (unitCombat.target == null)
         {
-            if (Path != null)
-            {
-                transform.LookAt(transform.position + Velocity);
-            }
+            transform.LookAt(transform.position + Velocity);
 
             steer.FollowPath();
-            steer.Avoid();
         }
         else
         {
             Vector3 closestPoint = unitCombat.GetClosestPoint();
             float range = unitStats.Range.FinalValue / 100.0f;
             float distance = (closestPoint - transform.position).magnitude;
-
             if (distance > range)
             {
-                steer.Arrive(closestPoint);
+                anim.SetBool("Running", true);
+                steer.Seek(closestPoint);
             }
             else
             {
+                anim.SetBool("Running", false);
+                anim.SetFloat("Attack Speed", 9.8f);
                 Velocity = Vector3.zero;
             }
 
             transform.LookAt(transform.position + Velocity);
         }
+        
         steer.Avoid();
         steer.Update();
     }

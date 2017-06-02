@@ -1,12 +1,15 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class VictoryManager : MonoBehaviour {
 
     public static VictoryManager instance;
 
     public string victor;
+    public GameObject endScreen;
+    public Text victorText;
 
     private void Awake()
     {
@@ -21,6 +24,8 @@ public class VictoryManager : MonoBehaviour {
         {
             victor = "Team West";
         }
+        endScreen.SetActive(true);
+        victorText.text = victor + " Wins";
 
         Transform units = GameObject.Find("Units").transform;
         for(int i = 0; i < units.childCount; i++)

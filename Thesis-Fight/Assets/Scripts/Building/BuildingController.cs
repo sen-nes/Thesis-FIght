@@ -5,7 +5,6 @@ using UnityEngine;
 public class BuildingController : MonoBehaviour, IBuilding {
 
     public GameObject unit;
-    public Transform unitParent;
     public bool CanBuild
     {
         get
@@ -16,7 +15,11 @@ public class BuildingController : MonoBehaviour, IBuilding {
 
     // Unit property?
     public float spawnTime;
+    private static Transform unitParent;
+    private Transform enemyCastle;
+
     public Vector3 bounds;
+    
 
     // ???
     private bool isSpawning;
@@ -25,8 +28,22 @@ public class BuildingController : MonoBehaviour, IBuilding {
 
     private void Start()
     {
-        //unit = Resources.Load<GameObject>("Units/Unit East");
-        unitParent = GameObject.Find("Units").transform;
+        // Path is mostly the same
+        if (unitParent == null)
+        {
+            unitParent = GameObject.Find("Units").transform;
+            if (GetComponent<Details>().teamID == 0)
+            {
+                enemyCastle = GameObject.Find("Castles").transform.GetChild(1).transform.Find("Attack Point");
+            }
+            else
+            {
+                enemyCastle = GameObject.Find("Castles").transform.GetChild(0).transform.Find("Attack Point");
+            }
+
+            unit.GetComponent<UnitMovement>().EnemyCastle = enemyCastle.position;
+        }
+        
         isSpawning = false;
         grid = GetComponent<PlacementGrid>();
 
@@ -70,5 +87,10 @@ public class BuildingController : MonoBehaviour, IBuilding {
         {
             grid.Hide();
         }
+    }
+
+    public void DestroyPlacementGrid()
+    {
+        Destroy(grid);
     }
 }

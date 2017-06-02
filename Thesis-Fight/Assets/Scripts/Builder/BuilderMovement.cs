@@ -37,12 +37,12 @@ public class BuilderMovement : MonoBehaviour, IBoid
     }
 
     private SteeringManager steer;
-    private Selectable selectable;
+    private ISelectable selectable;
 
     private void Start()
     {
         steer = new SteeringManager(this);
-        selectable = transform.Find("Selectable").GetComponent<Selectable>();
+        selectable = transform.Find("Selectable").GetComponent<ISelectable>();
 
         Speed = 10.0f;
         Mass = 10.0f;
@@ -67,7 +67,7 @@ public class BuilderMovement : MonoBehaviour, IBoid
 
     private void Update()
     {
-        if (selectable.selected)
+        if (selectable.Selected)
         {
             if (Input.GetMouseButton((int)MouseButton.MB_RIGHT))
             {

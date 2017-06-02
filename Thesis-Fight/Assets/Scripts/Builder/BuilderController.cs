@@ -2,31 +2,42 @@
 
 public class BuilderController : MonoBehaviour
 {
-    public GameObject building;
+    public int playerID;
 
-    private int floorMask;
+    private int floorLayer;
+    private int combatLayer;
 
     private bool isBuilding;
+    private GameObject[] buildings;
     private GameObject currentBuilding;
-    private Vector3 placementOffset;
+    private Transform buildingsParent;
 
-    public Material originalMaterial;
-    public Material buildingOK;
-    public Material buildingError;
+    private Material originalMaterial;
+    private Material buildingOK;
+    private Material buildingError;
+    private float incomePercentage;
 
-    public int playerID;
+    private ISelectable selectable;
 
     // Create IBuilding field
 
     private void Start()
     {
-        floorMask = LayerMask.GetMask("Floor");
+        floorLayer = LayerMask.GetMask("Floor");
+        combatLayer = LayerMask.NameToLayer("Combat");
         isBuilding = false;
-
-        placementOffset = Vector3.zero;//new Vector3(Grid.instance.nodeSize / 2, 0.0f, Grid.instance.nodeSize / 2);
+        incomePercentage = 0.05f;
 
         buildingOK = Resources.Load<Material>("Materials/building_OK");
         buildingError = Resources.Load<Material>("Materials/building_NOT_OK");
+
+        buildings = new GameObject[2];
+        buildings[0] = Resources.Load<GameObject>("Buildings/Building East");
+        buildings[1] = Resources.Load<GameObject>("Buildings/Building West");
+
+        buildingsParent = GameObject.Find("Buildings").transform;
+
+        selectable = transform.Find("Selectable").GetComponent<ISelectable>();
 
         playerID = 0;
     }
@@ -35,6 +46,7 @@ public class BuilderController : MonoBehaviour
     {
         if (isBuilding)
         {
+            // more complex if?
             MoveBuilding();
 
             if (Input.GetMouseButtonUp((int)MouseButton.MB_LEFT))
@@ -49,52 +61,53 @@ public class BuilderController : MonoBehaviour
         }
         else
         {
-            if (Input.GetKeyUp(KeyCode.Q))
+            if (selectable.Selected)
             {
-                if (GoldManager.instance.HasGold(0, 300))
+                if (Input.GetKeyUp(KeyCode.Q))
                 {
                     StartBuilding(0);
                 }
-            }
 
-            if (Input.GetKeyUp(KeyCode.W))
-            {
-                if (GoldManager.instance.HasGold(0, 300))
+                if (Input.GetKeyUp(KeyCode.W))
                 {
                     StartBuilding(1);
                 }
             }
         }
     }
-
-
-    private void StartBuilding(int buildingIndex)
+    
+    private Vector3 GetWorldPoint()
     {
-        Vector3 worldPoint = GetWorldPoint();
+        Ray camRay = Camera.main.ScreenPointToRay(Input.mousePosition);
+        RaycastHit hit;
+        Physics.Raycast(camRay, out hit, Mathf.Infinity, floorLayer);
 
-        if (buildingIndex == 0)
+        return hit.point;
+    }
+
+    public void StartBuilding(int buildingIndex)
+    {
+        if (GoldManager.instance.HasGold(playerID, 300) && !StateManager.instance.IsMenuOpen)
         {
-            building = Resources.Load<GameObject>("Buildings/Building East");
-        }
-        else
-        {
-            building = Resources.Load<GameObject>("Buildings/Building West");
-        }
+            Vector3 worldPoint = GetWorldPoint();
+            worldPoint = Grid.instance.NodeFromPoint(worldPoint).position;
+            currentBuilding = Instantiate(buildings[buildingIndex], worldPoint, Quaternion.identity);
+            
+            currentBuilding.transform.SetParent(buildingsParent);
+            currentBuilding.layer = 0;
+            originalMaterial = currentBuilding.transform.Find("Model").GetComponent<MeshRenderer>().material;
 
-        worldPoint = Grid.instance.NodeFromPoint(worldPoint).position - placementOffset;
-        currentBuilding = Instantiate(building, worldPoint, Quaternion.identity);
-        currentBuilding.transform.SetParent(GameObject.Find("Buildings").transform);
-        originalMaterial = currentBuilding.transform.Find("Model").GetComponent<MeshRenderer>().material;
-
-        isBuilding = true;
-        SelectionManager.instance.IsBuilding = true;
+            isBuilding = true;
+            StateManager.instance.IsBuilding = true;
+        }
     }
 
     private void MoveBuilding()
     {
         Vector3 worldPoint = GetWorldPoint();
 
-        worldPoint = Grid.instance.NodeFromPoint(worldPoint).position - placementOffset;
+        worldPoint = Grid.instance.NodeFromPoint(worldPoint).position;
+        // Cache transform?
         currentBuilding.transform.position = worldPoint;
 
         if (currentBuilding.GetComponent<IBuilding>().CanBuild)
@@ -112,20 +125,21 @@ public class BuilderController : MonoBehaviour
         if (currentBuilding.GetComponent<IBuilding>().CanBuild)
         {
             Vector3 worldPoint = GetWorldPoint();
-            worldPoint = Grid.instance.NodeFromPoint(worldPoint).position - placementOffset;
+            worldPoint = Grid.instance.NodeFromPoint(worldPoint).position;
 
-            currentBuilding.GetComponent<IBuilding>().StartSpawning();
             currentBuilding.GetComponent<IBuilding>().HidePlacementGrid();
-
             currentBuilding.GetComponent<IBuilding>().UpdateGrid();
+            currentBuilding.GetComponent<IBuilding>().StartSpawning();
 
             currentBuilding.transform.Find("Model").GetComponent<MeshRenderer>().material = originalMaterial;
-            isBuilding = false;
-            SelectionManager.instance.IsBuilding = false;
-            currentBuilding = null;
+            currentBuilding.layer = combatLayer;
 
-            GoldManager.instance.Pay(0, 300);
-            GoldManager.instance.AddIncome(0, (int)(300 * 0.1f));
+            currentBuilding = null;
+            isBuilding = false;
+            StateManager.instance.IsBuilding = false;
+
+            GoldManager.instance.Pay(playerID, 300);
+            GoldManager.instance.AddIncome(playerID, (int)(300 * incomePercentage));
         }
         else
         {
@@ -142,15 +156,6 @@ public class BuilderController : MonoBehaviour
         }
 
         isBuilding = false;
-        SelectionManager.instance.IsBuilding = false;
-    }
-
-    private Vector3 GetWorldPoint()
-    {
-        Ray camRay = Camera.main.ScreenPointToRay(Input.mousePosition);
-        RaycastHit hit;
-        Physics.Raycast(camRay, out hit, Mathf.Infinity, floorMask);
-
-        return hit.point;
+        StateManager.instance.IsBuilding = false;
     }
 }

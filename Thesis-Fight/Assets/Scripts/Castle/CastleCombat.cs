@@ -28,7 +28,7 @@ public class CastleCombat : MonoBehaviour, IAttackable {
 
         if (CurrentHealth <= 0)
         {
-            //currentHealth = 1;
+            // currentHealth = 1;
             Die();
         }
     }

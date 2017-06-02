@@ -79,7 +79,7 @@ public class SteeringManager
             //force.z = ahead.z - obstacle.position.z;
             force = obstacle.pointOfImpact - obstacle.center;
 
-            force = force.normalized * (15.0f * aheadModifier);//boid.Force;
+            force = force.normalized * (15.0f );// modifier, boid.Force;
         }
         else
         {
