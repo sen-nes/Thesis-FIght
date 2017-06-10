@@ -9,13 +9,11 @@ public class MainMenuManager : MonoBehaviour {
 
     public void Play()
     {
-        Debug.Log("Play");
         SceneManager.LoadScene(levelToLoad);
     }
 
     public void Quit()
     {
-        Debug.Log("Quitting...");
         Application.Quit();
     }
 }

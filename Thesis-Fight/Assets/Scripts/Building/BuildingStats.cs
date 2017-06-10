@@ -4,14 +4,16 @@ using UnityEngine;
 
 public class BuildingStats : MonoBehaviour {
 
+    public float health;
 	public Stat Health { get; set; }
+    public float armor;
     public Stat Armor { get; set; }
     public int ArmorType { get; set; }
 
     private void Awake()
     {
-        Health = new Stat("Health", "How much health the unit has.", 200);
-        // Armor
+        Health = new Stat("Health", health);
+        Armor = new Stat("Armor", armor);
         // ArmorType
     }
 }

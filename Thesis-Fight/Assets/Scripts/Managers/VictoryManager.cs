@@ -5,15 +5,26 @@ using UnityEngine.UI;
 
 public class VictoryManager : MonoBehaviour {
 
+    // Singleton is properly used here, or is it
+    // won't static methods do the same job
     public static VictoryManager instance;
 
     public string victor;
     public GameObject endScreen;
-    public Text victorText;
+    public Text victoryText;
 
     private void Awake()
     {
+        if (instance != null)
+        {
+            if (instance != this)
+            {
+                Destroy(gameObject);
+            }
+        }
+
         instance = this;
+
         victor = "None";
     }
 
@@ -24,13 +35,12 @@ public class VictoryManager : MonoBehaviour {
         {
             victor = "Team West";
         }
-        endScreen.SetActive(true);
-        victorText.text = victor + " Wins";
 
         Transform units = GameObject.Find("Units").transform;
-        for(int i = 0; i < units.childCount; i++)
+        for (int i = 0; i < units.childCount; i++)
         {
             Transform child = units.GetChild(i);
+
             child.GetComponent<UnitCombat>().enabled = false;
             child.GetComponent<UnitMovement>().enabled = false;
         }
@@ -39,9 +49,13 @@ public class VictoryManager : MonoBehaviour {
         for (int i = 0; i < buildings.childCount; i++)
         {
             Transform building = buildings.GetChild(i);
-            building.GetComponent<IBuilding>().StopSpawning();
-            building.GetComponent<BuildingCombat>().enabled = false;
+
+            // Stop spawning units
             building.GetComponent<BuildingController>().enabled = false;
+            building.GetComponent<BuildingCombat>().enabled = false;
         }
+
+        victoryText.text = victor + " Wins";
+        endScreen.SetActive(true);
     }
 }

@@ -2,95 +2,123 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BuildingController : MonoBehaviour, IBuilding {
+public class BuildingController : MonoBehaviour {
 
-    public GameObject unit;
-    public bool CanBuild
-    {
-        get
-        {
-            return grid.canBuild;
-        }
-    }
+    //public Vector3 bounds;
+    //public bool CanBuild
+    //{
+    //    get
+    //    {
+    //        return grid.canBuild;
+    //    }
+    //}
 
-    // Unit property?
-    public float spawnTime;
-    private static Transform unitParent;
-    private Transform enemyCastle;
+    //private Transform enemyCastle;
 
-    public Vector3 bounds;
-    
+    ////public
+    //public GameObject unit;
+    //private static Transform unitParent;
+    //private float unitSpawnTime;
 
-    // ???
-    private bool isSpawning;
-    private PlacementGrid grid;
-    private Transform spawnPoint;
+    //// ?
+    //private bool isSpawning;
+    //// Pool
+    //private PlacementGrid grid;
+    //private Transform spawnPoint;
 
-    private void Start()
-    {
-        // Path is mostly the same
-        if (unitParent == null)
-        {
-            unitParent = GameObject.Find("Units").transform;
-            if (GetComponent<Details>().teamID == 0)
-            {
-                enemyCastle = GameObject.Find("Castles").transform.GetChild(1).transform.Find("Attack Point");
-            }
-            else
-            {
-                enemyCastle = GameObject.Find("Castles").transform.GetChild(0).transform.Find("Attack Point");
-            }
+    //private BuildingSelectable selectable;
+    //private BuldingDetails buildingDetails;
 
-            unit.GetComponent<UnitMovement>().EnemyCastle = enemyCastle.position;
-        }
-        
-        isSpawning = false;
-        grid = GetComponent<PlacementGrid>();
+    //private float progress;
 
-        bounds = GetComponent<Collider>().bounds.size;
-        spawnPoint = transform.Find("Spawn Point");
-    }
+    //private void Awake()
+    //{
+    //    buildingDetails = GetComponent<BuldingDetails>();
+    //    unitParent = GameObject.Find("Units").transform;
 
-    public void SpawnUnits()
-    {
-        Instantiate(unit, spawnPoint.position, Quaternion.identity, unitParent);
-    }
+    //    unit = Resources.Load<GameObject>("Units/Footman");
+    //    unitSpawnTime = unit.GetComponent<UnitDetails>().unitSpawnTime;
 
-    public void StartSpawning()
-    {
-        InvokeRepeating("SpawnUnits", 2.0f, spawnTime);
-        isSpawning = true;
-    }
+    //    // Note: Path is mostly the same
+    //    if (buildingDetails.TeamID == 0)
+    //    {
+    //        enemyCastle = GameObject.Find("Castles").transform.GetChild(1).transform.Find("Attack Point");
+    //    }
+    //    else
+    //    {
+    //        enemyCastle = GameObject.Find("Castles").transform.GetChild(0).transform.Find("Attack Point");
+    //    }
 
-    public void StopSpawning()
-    {
-        CancelInvoke();
-        isSpawning = false;
-    }
+    //    unit.GetComponent<UnitMovement>().EnemyCastle = enemyCastle.position;
+    //    unit.GetComponent<UnitDetails>().TeamID = buildingDetails.TeamID;
+    //    unit.GetComponent<UnitDetails>().PlayerID = buildingDetails.PlayerID;
 
-    public void UpdateGrid()
-    {
-        Grid.instance.UpdateGridRegion(grid.sizeX, grid.sizeY, transform.position);
-    }
+    //    isSpawning = false;
+    //    grid = GetComponent<PlacementGrid>();
 
-    public void ShowPlacementGrid()
-    {
-        if (grid)
-        {
-            grid.Show();
-        }
-    }
+    //    bounds = GetComponent<Collider>().bounds.size;
+    //    spawnPoint = transform.Find("Spawn Point");
 
-    public void HidePlacementGrid()
-    {
-        if(grid)
-        {
-            grid.Hide();
-        }
-    }
+    //    selectable = transform.Find("Selectable").GetComponent<BuildingSelectable>();
+    //}
 
-    public void DestroyPlacementGrid()
-    {
-        Destroy(grid);
-    }
+    //private void Update()
+    //{
+    //    if (isSpawning)
+    //    {
+    //        progress += Time.deltaTime;
+    //    }
+
+    //    if (selectable.Selected)
+    //    {
+    //        selectable.UpdateProgress(progress /unitSpawnTime);
+    //    }
+    //}
+
+    //public void SpawnUnits()
+    //{
+    //    Instantiate(unit, spawnPoint.position, Quaternion.identity, unitParent);
+    //    progress = 0.0f;
+    //}
+
+    //public void StartSpawning()
+    //{
+    //    // Use coroutine
+    //    InvokeRepeating("SpawnUnits", unitSpawnTime, unitSpawnTime);
+    //    progress = 0.0f;
+    //    isSpawning = true;
+    //}
+
+    //public void StopSpawning()
+    //{
+    //    CancelInvoke();
+    //    progress = 0.0f;
+    //    isSpawning = false;
+    //}
+
+    //public void UpdateGrid()
+    //{
+    //    Grid.instance.UpdateGridRegion(grid.sizeX, grid.sizeY, transform.position);
+    //}
+
+    //public void ShowPlacementGrid()
+    //{
+    //    if (grid)
+    //    {
+    //        grid.Show();
+    //    }
+    //}
+
+    //public void HidePlacementGrid()
+    //{
+    //    if(grid)
+    //    {
+    //        grid.Hide();
+    //    }
+    //}
+
+    //public void DestroyPlacementGrid()
+    //{
+    //    Destroy(grid);
+    //}
 }

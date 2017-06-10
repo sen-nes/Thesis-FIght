@@ -9,7 +9,6 @@ public class Stat
 
     // Properties
     public string StatName { get; set; }
-    public string StatDescription { get; set; }
     public float BaseValue { get; set; }
     public float FinalValue
     {
@@ -27,10 +26,9 @@ public class Stat
     public List<IStatModifier> Debuffs;
 
     // Constructors
-    public Stat(string _statName, string _statDescription, float _baseValue)
+    public Stat(string _statName, float _baseValue)
     {
         StatName = _statName;
-        StatDescription = _statDescription;
         BaseValue = _baseValue;
 
         Buffs = new List<IStatModifier>();

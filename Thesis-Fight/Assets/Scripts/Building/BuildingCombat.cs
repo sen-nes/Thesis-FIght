@@ -3,39 +3,53 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class BuildingCombat : MonoBehaviour, IAttackable {
+public class BuildingCombat : MonoBehaviour {
 
-    public float currentHealth;
-    public Image healthBar;
+    //public float currentHealth;
+    //public Image healthBar;
 
-    // Attackable
-    public float CurrentHealth { get { return currentHealth; } set { currentHealth = value; } }
-    public int AttackPriority { get; set; }
+    //// Attackable
+    //public float CurrentHealth { get { return currentHealth; } set { currentHealth = value; } }
+    //public int AttackPriority { get; set; }
+    //public int KillValue { get; set; }
 
-    private BuildingStats buildingStats;
+    //private BuildingStats buildingStats;
 
-    private void Start()
-    {
-        buildingStats = GetComponent<BuildingStats>();
-        CurrentHealth = buildingStats.Health.FinalValue;
-        AttackPriority = (int)Priority.BUILDING;
-    }
+    //private void Awake()
+    //{
+    //    buildingStats = GetComponent<BuildingStats>();
+    //    AttackPriority = (int)Priority.BUILDING;
+    //    KillValue = GetComponent<BuldingDetails>().buildingPrice * 0.1f;
+    //}
 
-    public void TakeDamage(float amount)
-    {
-        CurrentHealth -= amount;
-        healthBar.fillAmount = currentHealth / buildingStats.Health.FinalValue;
+    //private void Start()
+    //{
+    //    CurrentHealth = buildingStats.Health.FinalValue;
+    //}
 
-        if (CurrentHealth <= 0)
-        {
-            Die();
-        }
-    }
+    //public bool TakeDamage(float amount)
+    //{
+    //    CurrentHealth -= amount;
+    //    healthBar.fillAmount = currentHealth / buildingStats.Health.FinalValue;
 
-    private void Die()
-    {
-        // Clean up
+    //    if (CurrentHealth <= 0)
+    //    {
+    //        Die();
+    //        return true;
+    //    }
 
-        Destroy(gameObject);
-    }
+    //    return false;
+    //}
+
+    //private void Die()
+    //{
+    //    ISelectable selectable = transform.Find("Selectable").GetComponent<ISelectable>();
+    //    // Clean up after unit
+    //    if (selectable.Selected)
+    //    {
+    //        SelectionManager.instance.OnDeath(selectable);
+    //    }
+
+    //    Destroy(gameObject);
+    //}
 }

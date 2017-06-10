@@ -5,8 +5,12 @@ using UnityEngine.UI;
 
 public class GoldManager : MonoBehaviour {
 
+    // Consider assigning a gold manager to each builder
     public static GoldManager instance;
-    public float incomePeriod;
+
+    public float incomePeriod = 15;
+    public float incomePercentage = 0.02f;
+
     public Text currentGold;
 
     private int[] income;
@@ -16,32 +20,43 @@ public class GoldManager : MonoBehaviour {
 
     private void Awake()
     {
-        int numberOfPlayers = GameObject.FindGameObjectsWithTag("Builder").Length;
-        income = new int[numberOfPlayers];
-        gold = new int[numberOfPlayers];
-        
-        for (int i = 0; i < numberOfPlayers; i++)
+        if (instance != null)
         {
-            income[0] = 15;
-            gold[i] = 1000;
+            if (instance != this)
+            {
+                // Would this statement destroy the whole object and not just this script
+                Destroy(gameObject);
+            }
+            
         }
+
+        instance = this;
     }
 
     private void Start()
     {
-        instance = this;
+        int playerCount = GameStartManager.playerCount;
+        income = new int[playerCount];
+        gold = new int[playerCount];
+
+        for (int i = 0; i < playerCount; i++)
+        {
+            income[0] = 5;
+            gold[i] = 1000;
+        }
+
         StartIncomeDistribution();
     }
 
-    private void Update()
+    public void AddIncome(int playerID, int value)
     {
-        // Place in builder probably
-        currentGold.text = gold[0].ToString();
+        income[playerID] += (int)(value * incomePercentage);
     }
 
-    public void AddIncome(int playerID, int incomeValue)
+    public void AddGold(int playerID, int value)
     {
-        income[playerID] += incomeValue;
+        gold[playerID] += value;
+        currentGold.text = gold[GameStartManager.HumanPlayer].ToString();
     }
 
     public bool HasGold(int playerID, int cost)
@@ -59,6 +74,8 @@ public class GoldManager : MonoBehaviour {
         if (gold[playerID] >= cost)
         {
             gold[playerID] -= cost;
+            AddIncome(playerID, cost);
+            currentGold.text = gold[GameStartManager.HumanPlayer].ToString();
         }
         else
         {
@@ -68,6 +85,7 @@ public class GoldManager : MonoBehaviour {
 
     private void StartIncomeDistribution()
     {
+        // Create own invoke coroutine
         InvokeRepeating("DistributeIncome", incomePeriod, incomePeriod);
     }
 
@@ -77,5 +95,8 @@ public class GoldManager : MonoBehaviour {
         {
             gold[i] += income[i];
         }
+        
+        // Updat e
+        currentGold.text = gold[GameStartManager.HumanPlayer].ToString();
     }
 }
