@@ -13,7 +13,8 @@ public class SelectionManager : MonoBehaviour {
 
     private void Update()
     {
-        if (Input.GetMouseButtonUp((int)MouseButton.MB_LEFT) && !EventSystem.current.IsPointerOverGameObject())
+        if (Input.GetMouseButtonUp((int)MouseButton.MB_LEFT) && !EventSystem.current.IsPointerOverGameObject() 
+            && !GameStartManager.HumanBuilder.GetComponent<Build>().isBuilding)
         {
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             RaycastHit hit;
@@ -27,6 +28,14 @@ public class SelectionManager : MonoBehaviour {
             {
                 ClearSelection();
             }
+        }
+        else
+        {
+            // Setup a proper check
+            if (selectedObject == null)
+            {
+                ClearSelection();
+            } 
         }
     }
 

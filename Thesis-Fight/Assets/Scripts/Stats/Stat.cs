@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class Stat
 {
-
     private float _finalValue;
 
     // Properties

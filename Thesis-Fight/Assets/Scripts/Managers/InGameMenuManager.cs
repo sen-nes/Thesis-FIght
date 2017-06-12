@@ -28,12 +28,13 @@ public class InGameMenuManager : MonoBehaviour {
 
     private void Update()
     {
-        if (canOpen && Input.GetKeyDown(KeyCode.Escape))
+        if (canOpen && Input.GetKeyDown(KeyCode.Escape) && !GameStartManager.HumanBuilder.GetComponent<Build>().isBuilding)
         {
             if (menuCanvas.activeSelf)
             {
                 isOpen = false;
                 menuCanvas.SetActive(false);
+                Time.timeScale = 1.0f;
             }
             else
             {
@@ -48,7 +49,8 @@ public class InGameMenuManager : MonoBehaviour {
 
     public void Resume()
     {
-        GameObject.Find("Menu Canvas").SetActive(false);
+        isOpen = false;
+        menuCanvas.SetActive(false);
         Time.timeScale = 1.0f;
     }
 

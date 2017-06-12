@@ -6,7 +6,6 @@ using UnityEngine;
 public class StatMultiply : IStatModifier
 {
     // Properties
-    public string Description { get; set; }
     public string Name { get; set; }
     public float ModifierValue { get; set; }
 
@@ -14,7 +13,6 @@ public class StatMultiply : IStatModifier
     public StatMultiply(string _name, string _description, float _modifierValue)
     {
         Name = _name;
-        Description = _description;
         ModifierValue = _modifierValue;
     }
 

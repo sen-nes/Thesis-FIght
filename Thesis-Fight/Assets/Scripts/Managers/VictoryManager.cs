@@ -41,8 +41,10 @@ public class VictoryManager : MonoBehaviour {
         {
             Transform child = units.GetChild(i);
 
-            child.GetComponent<UnitCombat>().enabled = false;
-            child.GetComponent<UnitMovement>().enabled = false;
+            // Stop units from acting
+
+            //child.GetComponent<UnitCombat>().enabled = false;
+            //child.GetComponent<UnitMovement>().enabled = false;
         }
 
         Transform buildings = GameObject.Find("Buildings").transform;
@@ -51,8 +53,7 @@ public class VictoryManager : MonoBehaviour {
             Transform building = buildings.GetChild(i);
 
             // Stop spawning units
-            building.GetComponent<BuildingController>().enabled = false;
-            building.GetComponent<BuildingCombat>().enabled = false;
+            // Disable combat components
         }
 
         victoryText.text = victor + " Wins";

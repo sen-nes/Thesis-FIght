@@ -69,7 +69,7 @@ public class Avoidance : MonoBehaviour {
         for (int i = 0; i < rayDirs.Length; i++)
         {
             float dist = (i == 0) ? checkAhead : checkSides;
-            Debug.DrawRay(transform.position, rayDirs[i].normalized * dist, Color.red);
+            Debug.DrawLine(transform.position, transform.position + rayDirs[i].normalized * dist, Color.red);
 
             RaycastHit hit;
             if (Physics.Raycast(transform.position, rayDirs[i], out hit, dist))

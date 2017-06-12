@@ -75,14 +75,18 @@ public class Build : MonoBehaviour {
     public void BeginBuilding(int index)
     {
         // Give correct values to GoldManager
-        if (GoldManager.instance.HasGold(0, 300))
+        if (GoldManager.instance.HasGold(0, buildings[index].GetComponent<BuildingController>().building.cost))
         {
             Vector3 buildPoint = GetBuildPoint();
 
-            currentBuilding = Instantiate(buildings[index], buildPoint, Quaternion.identity, buildingsParent);
+            GameObject building = buildings[index];
 
-            // set default layer
-            
+            building.GetComponent<BuildingController>().teamID = GetComponent<BuilderController>().teamID;
+            building.GetComponent<BuildingController>().playerID = GetComponent<BuilderController>().playerID;
+            building.GetComponent<BuildingController>().enemyCastle = GetComponent<BuilderController>().enemyCastle;
+
+            currentBuilding = Instantiate(building, buildPoint, Quaternion.identity, buildingsParent);
+
             // Renderer or MeshRenderer
             buildingMaterial = currentBuilding.GetComponentInChildren<Renderer>().material;
             isBuilding = true;
@@ -108,6 +112,7 @@ public class Build : MonoBehaviour {
 
     private void PlaceBuilding()
     {
+        // Check if player has enough money again?
         // Check BuildingGrid for canBuild
 
         // Hide grid and update world
@@ -115,10 +120,11 @@ public class Build : MonoBehaviour {
         // Renderer or MeshRenderer
         currentBuilding.GetComponentInChildren<Renderer>().material = buildingMaterial;
         currentBuilding.layer = combatLayer;
+        currentBuilding.GetComponent<Spawner>().StartSpawning();
 
         // Give correct playerID and building cost
         // should GoldManager be a global object or local to the builder
-        GoldManager.instance.Pay(0, 300);
+        GoldManager.instance.Pay(0, currentBuilding.GetComponent<BuildingController>().building.cost);
 
         currentBuilding = null;
         isBuilding = false;
@@ -144,7 +150,7 @@ public class Build : MonoBehaviour {
     {
         // Think of a neater way to ensure you are getting discernible feedback
         // Cache layer mask
-        Vector3 buildPoint = Helpers.GetFloorPoint(LayerMask.GetMask("Floor"));
+        Vector3 buildPoint = Helpers.RaycastFloor(LayerMask.GetMask("Floor"));
         buildPoint = Grid.instance.NodeFromPoint(buildPoint).position;
 
         return buildPoint;

@@ -2,61 +2,53 @@
 
 public class GameStartManager : MonoBehaviour {
 
-    public static int HumanPlayer { get; set; }
-    public static int playerCount = 2;
+    public GameObject builder;
 
-    GameObject[] builders;
-    GameObject[] castles;
+    public static GameObject HumanBuilder { get; private set; }
+    public static int HumanBuilderID { get; private set; }
+
+    public static int playerCount = 2;
+    public Transform eastSpawn;
+    public Transform westSpawn;
+
+    private GameObject[] builders;
 
     private void Awake()
     {
-        builders = new GameObject[2];
-        castles = GameObject.FindGameObjectsWithTag("Castle");
-        Debug.Log("Found " + castles.Length + " castles.");
+        builders = new GameObject[playerCount];
 
-        HumanPlayer = Random.Range(0, playerCount - 1);
-        Debug.Log("Human player ID: " + HumanPlayer);
-    }
-
-    private void Start()
-    {
+        Debug.Log("Players: " + playerCount);
+        HumanBuilderID = Random.Range(0, playerCount - 1);
+        Debug.Log("Human builder ID: " + HumanBuilderID);
+        
         InstantiateBuilders();
 
-        if (castles != null)
-        {
-            SetupCastles();
-        }
+        HumanBuilder = builders[HumanBuilderID];
     }
 
     private void InstantiateBuilders()
     {
+        GameObject castles = GameObject.Find("Castles");
         for (int i = 0; i < playerCount; i++)
         {
-            // Set player teams
+            // Check whether it's the human player
 
-            // Spawn at appropriate points
-        }
-    }
+            if ((i % 2) == 0)
+            {
+                builder.transform.position = eastSpawn.position;
+                builder.GetComponent<BuilderController>().enemyCastle = castles.transform.Find("Castle West").Find("Attack Point").position;
+            }
+            else
+            {
+                builder.transform.position = westSpawn.position;
+                builder.GetComponent<BuilderController>().enemyCastle = castles.transform.Find("Castle East").Find("Attack Point").position;
+            }
 
-    private void SetupCastles()
-    {
-        if (castles.Length == 2)
-        {
-            //for (int i = 0; i < castles.Length; i++)
-            //{
-            //    if (castles[i].name.Contains("East"))
-            //    {
-            //        castles[i].GetComponent<CastleDetails>().TeamID = (int)Team.TEAM_EAST;
-            //    }
-            //    else
-            //    {
-            //        castles[i].GetComponent<CastleDetails>().TeamID = (int)Team.TEAM_WEST;
-            //    }
-            //}
-        }
-        else
-        {
-            Debug.Log("Can't have more than two castles.");
+            // Assign team in a different way
+            builder.GetComponent<BuilderController>().teamID = (Team)(i % 2);
+            builder.GetComponent<BuilderController>().playerID = i;
+
+            builders[i] = Instantiate(builder);
         }
     }
 }

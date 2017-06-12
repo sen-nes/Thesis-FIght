@@ -56,7 +56,7 @@ public class GoldManager : MonoBehaviour {
     public void AddGold(int playerID, int value)
     {
         gold[playerID] += value;
-        currentGold.text = gold[GameStartManager.HumanPlayer].ToString();
+        currentGold.text = gold[GameStartManager.HumanBuilderID].ToString();
     }
 
     public bool HasGold(int playerID, int cost)
@@ -75,7 +75,7 @@ public class GoldManager : MonoBehaviour {
         {
             gold[playerID] -= cost;
             AddIncome(playerID, cost);
-            currentGold.text = gold[GameStartManager.HumanPlayer].ToString();
+            currentGold.text = gold[GameStartManager.HumanBuilderID].ToString();
         }
         else
         {
@@ -97,6 +97,6 @@ public class GoldManager : MonoBehaviour {
         }
         
         // Updat e
-        currentGold.text = gold[GameStartManager.HumanPlayer].ToString();
+        currentGold.text = gold[GameStartManager.HumanBuilderID].ToString();
     }
 }

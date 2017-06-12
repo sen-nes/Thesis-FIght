@@ -48,5 +48,5 @@ public class HUDManager : MonoBehaviour {
         }
     }
 
-    // Building production
+    // Building Start/Stop spawning
 }

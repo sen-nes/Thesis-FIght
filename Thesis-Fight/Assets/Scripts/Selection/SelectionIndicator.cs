@@ -18,8 +18,8 @@ public class SelectionIndicator : MonoBehaviour {
         {
             transform.Find("Indicator").gameObject.SetActive(true);
 
-            Renderer rend = selectionManager.selectedObject.GetComponentInChildren<Renderer>();
-            Bounds bounds = rend.bounds;
+            Collider collider = selectionManager.selectedObject.GetComponent<Collider>();
+            Bounds bounds = collider.bounds;
             float diameter = Mathf.Sqrt(bounds.size.x * bounds.size.x + bounds.size.z * bounds.size.z);
             diameter *= 1.6f;
 

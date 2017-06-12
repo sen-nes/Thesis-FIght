@@ -33,7 +33,7 @@ public class SteeringManager : MonoBehaviour
     public Vector3 SeekMouse()
     {
         // Cache layer mask
-        Vector3 mouse = Helpers.GetFloorPoint(LayerMask.GetMask("Floor"));
+        Vector3 mouse = Helpers.RaycastFloor(LayerMask.GetMask("Floor"));
 
         return Seek(mouse);
     }
@@ -63,7 +63,7 @@ public class SteeringManager : MonoBehaviour
     public Vector3 ArriveAtMouse()
     {
         // Cache layer mask
-        Vector3 mouse = Helpers.GetFloorPoint(LayerMask.GetMask("Floor"));
+        Vector3 mouse = Helpers.RaycastFloor(LayerMask.GetMask("Floor"));
 
         return Arrive(mouse);
     }
@@ -110,5 +110,15 @@ public class SteeringManager : MonoBehaviour
     public void FaceMovementDirection()
     {
         transform.LookAt(transform.position + rb.velocity);
+    }
+    
+    public static float GetBoundingRadius(Transform tr)
+    {
+        Collider collider = tr.GetComponent<Collider>();
+        Bounds bounds = collider.bounds;
+
+        float radius = Mathf.Sqrt(bounds.extents.x * bounds.extents.x + bounds.extents.z * bounds.extents.z);
+
+        return radius;
     }
 }
