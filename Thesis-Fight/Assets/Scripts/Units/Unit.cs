@@ -5,6 +5,8 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "NewUnit", menuName = "Units/New unit...", order = 1)]
 public class Unit : ScriptableObject {
 
+    public string name;
+
     public float health;
     public float armor;
     public ArmorTypes armorType;
@@ -17,9 +19,6 @@ public class Unit : ScriptableObject {
     public float criticalDamage;
 
     public float movementSpeed;
-
-    public float spawnTime;
-    public int killValue;
 
     private Priorities priority = Priorities.UNIT;
 
@@ -39,7 +38,6 @@ public class Unit : ScriptableObject {
         stats.MovementSpeed = new Stat("Movement Speed", movementSpeed);
 
         Attackable attackable = obj.GetComponent<Attackable>();
-        attackable.KillValue = killValue;
         attackable.AttackPriority = priority;
     }
 }

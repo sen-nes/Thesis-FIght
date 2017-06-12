@@ -5,12 +5,13 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "NewBuilding", menuName = "Buildings/New building...", order = 2)]
 public class Building : ScriptableObject {
 
+    public string name;
+
     public float health;
     public float armor;
     public ArmorTypes armorType;
 
     public int cost;
-    public int killValue;
 
     private Priorities priority = Priorities.BUILDING;
 
@@ -20,11 +21,15 @@ public class Building : ScriptableObject {
 
         stats.Health = new Stat("Health", health);
         stats.Armor = new Stat("Armor", armor);
-
         stats.ArmorType = armorType;
 
+        Spawner spawner = obj.GetComponent<Spawner>();
+
+        spawner.spawnTime = cost / 20 + 15;
+
         Attackable attackable = obj.GetComponent<Attackable>();
-        attackable.KillValue = killValue;
+
+        attackable.KillValue = (int)(cost * 0.1);
         attackable.AttackPriority = priority;
     }
 }

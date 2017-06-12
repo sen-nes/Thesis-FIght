@@ -13,9 +13,13 @@ public class Build : MonoBehaviour {
     private Transform buildingsParent;
     private GameObject currentBuilding;
 
+    private BuildingGrid buildingGrid;
+
     private Material buildingMaterial;
-    private Material buildingOK;
-    private Material buildingError;
+
+    // Set in inspector or set in code?
+    public Material buildingOK;
+    public Material buildingError;
 
     private int floorLayer;
     private int combatLayer;
@@ -29,8 +33,9 @@ public class Build : MonoBehaviour {
         inGameMenuManager = GameObject.FindObjectOfType<InGameMenuManager>();
 
         buildingsParent = GameObject.Find("Buildings").transform;
-        buildingOK = Resources.Load<Material>("Materials/building_OK");
-        buildingError = Resources.Load<Material>("Materials/building_NOT_OK");
+
+        // Find in a more appropriate way
+        buildingGrid = GameObject.FindObjectOfType<BuildingGrid>();
 
         floorLayer = LayerMask.GetMask("Floor");
         combatLayer = LayerMask.NameToLayer("Combat");
@@ -75,7 +80,7 @@ public class Build : MonoBehaviour {
     public void BeginBuilding(int index)
     {
         // Give correct values to GoldManager
-        if (GoldManager.instance.HasGold(0, buildings[index].GetComponent<BuildingController>().building.cost))
+        if (GoldManager.instance.HasGold(GetComponent<BuilderController>().playerID, buildings[index].GetComponent<BuildingController>().building.cost))
         {
             Vector3 buildPoint = GetBuildPoint();
 
@@ -89,8 +94,21 @@ public class Build : MonoBehaviour {
 
             // Renderer or MeshRenderer
             buildingMaterial = currentBuilding.GetComponentInChildren<Renderer>().material;
+
+            buildingGrid.Show();
+            // Update material accordingly
+            if (buildingGrid.UpdateGrid(currentBuilding.transform))
+            {
+                currentBuilding.GetComponentInChildren<Renderer>().material = buildingOK;
+            }
+            else
+            {
+                currentBuilding.GetComponentInChildren<Renderer>().material = buildingError;
+            }
+
+
+
             isBuilding = true;
-            
             // Notify menu
         }
         else
@@ -107,37 +125,54 @@ public class Build : MonoBehaviour {
         // to see if any movement happened
         currentBuilding.transform.position = buildPoint;
 
+        // Update material accordingly
+        if (buildingGrid.UpdateGrid(currentBuilding.transform))
+        {
+            currentBuilding.GetComponentInChildren<Renderer>().material = buildingOK;
+        }
+        else
+        {
+            currentBuilding.GetComponentInChildren<Renderer>().material = buildingError;
+        }
+
         // Check BuildingGrid for canBuild and update material
     }
 
     private void PlaceBuilding()
     {
-        // Check if player has enough money again?
-        // Check BuildingGrid for canBuild
+        // Check if player has enough money again
 
-        // Hide grid and update world
-        
-        // Renderer or MeshRenderer
-        currentBuilding.GetComponentInChildren<Renderer>().material = buildingMaterial;
-        currentBuilding.layer = combatLayer;
-        currentBuilding.GetComponent<Spawner>().StartSpawning();
+        if (buildingGrid.UpdateGrid(currentBuilding.transform))
+        {
+            // Hide grid and update world
+            buildingGrid.Hide();
 
-        // Give correct playerID and building cost
-        // should GoldManager be a global object or local to the builder
-        GoldManager.instance.Pay(0, currentBuilding.GetComponent<BuildingController>().building.cost);
+            // Renderer or MeshRenderer
+            currentBuilding.GetComponentInChildren<Renderer>().material = buildingMaterial;
+            currentBuilding.layer = combatLayer;
+            currentBuilding.GetComponent<Spawner>().StartSpawning();
 
-        currentBuilding = null;
-        isBuilding = false;
-        
-        // Notify menu
+            // Give correct playerID and building cost
+            // should GoldManager be a global object or local to the builder
+            GoldManager.instance.Pay(GetComponent<BuilderController>().playerID, currentBuilding.GetComponent<BuildingController>().building.cost);
 
-        // Log a notification if the player can't build at point
+            currentBuilding = null;
+            isBuilding = false;
+
+            // Notify menu
+        }
+        else
+        {
+            // Log a notification if the player can't build at point
+            Debug.Log("Can't build at this spot.");
+        }
     }
 
     private void CancelBuilding()
     {
         if (currentBuilding != null)
         {
+            buildingGrid.Hide();
             Destroy(currentBuilding);
             currentBuilding = null;
         }

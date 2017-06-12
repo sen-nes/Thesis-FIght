@@ -8,10 +8,14 @@ public class GoldManager : MonoBehaviour {
     // Consider assigning a gold manager to each builder
     public static GoldManager instance;
 
-    public float incomePeriod = 15;
+    public int startingIncome = 5;
+    public int startingGold = 250;
+    public float incomeDistributionPeriod = 10;
     public float incomePercentage = 0.02f;
+    public float incomeShowDuration;
 
     public Text currentGold;
+    public Text incomeText;
 
     private int[] income;
     private int[] gold;
@@ -41,16 +45,24 @@ public class GoldManager : MonoBehaviour {
 
         for (int i = 0; i < playerCount; i++)
         {
-            income[0] = 5;
-            gold[i] = 1000;
+            income[0] = startingIncome;
+            gold[i] = startingGold;
         }
 
+        currentGold.text = startingGold.ToString();
+        incomeText.text = "+" + startingIncome + "g";
+        incomeText.gameObject.SetActive(false);
         StartIncomeDistribution();
     }
 
     public void AddIncome(int playerID, int value)
     {
         income[playerID] += (int)(value * incomePercentage);
+        
+        if (playerID == GameStartManager.HumanBuilderID)
+        {
+            incomeText.text = "+" + income[playerID] + "g";
+        }
     }
 
     public void AddGold(int playerID, int value)
@@ -86,7 +98,7 @@ public class GoldManager : MonoBehaviour {
     private void StartIncomeDistribution()
     {
         // Create own invoke coroutine
-        InvokeRepeating("DistributeIncome", incomePeriod, incomePeriod);
+        InvokeRepeating("DistributeIncome", incomeDistributionPeriod, incomeDistributionPeriod);
     }
 
     private void DistributeIncome()
@@ -95,8 +107,15 @@ public class GoldManager : MonoBehaviour {
         {
             gold[i] += income[i];
         }
-        
-        // Updat e
+
+        StartCoroutine(ShowIncome());
         currentGold.text = gold[GameStartManager.HumanBuilderID].ToString();
+    }
+
+    public IEnumerator ShowIncome()
+    {
+        incomeText.gameObject.SetActive(true);
+        yield return new WaitForSeconds(incomeShowDuration);
+        incomeText.gameObject.SetActive(false);
     }
 }

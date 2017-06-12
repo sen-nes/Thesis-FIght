@@ -58,5 +58,6 @@ public class VictoryManager : MonoBehaviour {
 
         victoryText.text = victor + " Wins";
         endScreen.SetActive(true);
+        Time.timeScale = 0f;
     }
 }

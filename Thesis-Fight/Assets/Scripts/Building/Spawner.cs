@@ -5,13 +5,21 @@ using UnityEngine;
 public class Spawner : MonoBehaviour {
 
     public GameObject unit;
+    public float spawnTime;
 
     // Check if it behaves as expected
     public float Progress
     {
         get
         {
-            return (spawnStart % spawnTime) / spawnTime;
+            if (isSpawning)
+            {
+                return ((Time.time - spawnStart) % spawnTime) / spawnTime;
+            }
+            else
+            {
+                return 0f;
+            }
         }
     }
 
@@ -19,7 +27,6 @@ public class Spawner : MonoBehaviour {
     private static Transform unitParent;
     private Transform spawnPoint;
     private bool isSpawning;
-    private float spawnTime;
     private float spawnStart;
 
     private void Awake()
@@ -30,8 +37,7 @@ public class Spawner : MonoBehaviour {
         spawnPoint = transform.Find("Spawn Point");
         isSpawning = false;
 
-        // Setup reference to unit's spawnTime so it updates in-game?
-        spawnTime = unit.GetComponent<UnitController>().unit.spawnTime;        
+        // Setup reference to unit's spawnTime so it updates in-game?     
     }
 
     public void SpawnUnits()
@@ -40,6 +46,7 @@ public class Spawner : MonoBehaviour {
         unit.GetComponent<UnitController>().teamID = GetComponent<BuildingController>().teamID;
         unit.GetComponent<UnitController>().playerID = GetComponent<BuildingController>().playerID;
         unit.GetComponent<UnitController>().enemyCastle = GetComponent<BuildingController>().enemyCastle;
+        unit.GetComponent<UnitController>().killValue = GetComponent<Attackable>().KillValue / 5;
 
         Instantiate(unit, spawnPoint.position, Quaternion.identity, unitParent);
     }

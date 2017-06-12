@@ -43,6 +43,9 @@ public class Attack : MonoBehaviour {
                     rb.velocity = Vector3.zero;
                 }
 
+                // Or at least set the lookAt direction before starting the attack
+                transform.LookAt(findTarget.target.transform.position);
+
                 // Start attack animation
                 anim.SetFloat("Attack Speed", fighterStats.AttackSpeed.FinalValue);
             }
@@ -83,10 +86,11 @@ public class Attack : MonoBehaviour {
         float damage = fighterStats.AttackDamage.FinalValue;
 
         // Damage/Armor types
-
-        if (attackable.TakeDamage(damage))
+        int plunder = attackable.TakeDamage(damage);
+        if (plunder > 0)
         {
-            // Give player gold for kill
+            // Cache playerID
+            GoldManager.instance.AddGold(GetComponent<UnitController>().playerID, plunder);
             findTarget.target = null;
         }
     }

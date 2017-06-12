@@ -5,10 +5,12 @@ public class SelectionManager : MonoBehaviour {
     public GameObject selectedObject;
 
     private int selectableMask;
+    private HUDManager hudManager;
 
     private void Awake()
     {
         selectableMask = LayerMask.GetMask("Selectable");
+        hudManager = GameObject.Find("UI").transform.Find("HUD").GetComponent<HUDManager>();
     }
 
     private void Update()
@@ -55,11 +57,13 @@ public class SelectionManager : MonoBehaviour {
 
         Debug.Log(obj.name + " selected");
         selectedObject = obj;
+        hudManager.UpdateHUD(selectedObject);
     }
 
     private void ClearSelection()
     {
         selectedObject = null;
+        hudManager.UpdateHUD(selectedObject);
     }
 
     // On death

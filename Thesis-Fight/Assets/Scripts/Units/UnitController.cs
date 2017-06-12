@@ -12,6 +12,7 @@ public class UnitController : MonoBehaviour {
 
     public Team teamID;
     public int playerID;
+    public int killValue;
 
     private SteeringManager steeringManager;
     private FollowPath followPath;
@@ -26,6 +27,7 @@ public class UnitController : MonoBehaviour {
     {
         unit.Initialize(gameObject);
         this.GetComponent<Attackable>().teamID = teamID;
+        this.GetComponent<Attackable>().KillValue = killValue;
     }
 
     private void Start()
@@ -76,7 +78,14 @@ public class UnitController : MonoBehaviour {
 
                 //}
 
-                Vector3 accel = followPath.Follow(path);
+                //Vector3 accel = followPath.Follow(path);
+
+                Vector3 accel = avoidance.Avoid();
+                if (accel.magnitude < 0.005f)
+                {
+                    accel = followPath.Follow(path);
+                }
+
                 steeringManager.Steer(accel);
                 steeringManager.FaceMovementDirection();
             }

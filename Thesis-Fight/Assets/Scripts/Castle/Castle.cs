@@ -23,8 +23,5 @@ public class Castle : ScriptableObject {
         Attackable attackable = obj.GetComponent<Attackable>();
         attackable.KillValue = killValue;
         attackable.AttackPriority = priority;
-
-        Vector3 offset = new Vector3(-15f, 0, 0);
-        obj.transform.Find("Attack Point").position = obj.transform.position + offset;
     }
 }

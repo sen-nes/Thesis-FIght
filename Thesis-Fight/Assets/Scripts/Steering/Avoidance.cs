@@ -29,6 +29,8 @@ public class Avoidance : MonoBehaviour {
         Vector3[] rayDirs = new Vector3[3];
 
         // Is this calculated correctly
+        // Throws a Object reference not set to an instance of an object exception at times.
+        // Happened when units were circling around the wall and destroying enemy structures and castle.
         float orientation = Mathf.Atan2(rb.velocity.z, rb.velocity.x);
 
         rayDirs[0] = rb.velocity.normalized;
