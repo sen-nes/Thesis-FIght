@@ -22,6 +22,11 @@ public class FindTarget : MonoBehaviour {
         buildings = GameObject.Find("Buildings").transform;
     }
 
+    private void Start()
+    {
+        searchRadius *= 2;
+    }
+
     private void Update()
     {
         // Check in every tenth frame and start checking every frame if you detect a unit or sth

@@ -34,7 +34,7 @@ public class Attack : MonoBehaviour {
             float distance = (transform.position - findTarget.target.transform.position).magnitude;
             distance -= SteeringManager.GetBoundingRadius(transform);
             distance -= SteeringManager.GetBoundingRadius(findTarget.target.transform);
-
+            
             if (distance <= range)
             {
                 if (!stationary)

@@ -193,47 +193,40 @@ public class HUDManager : MonoBehaviour {
 
         if (!details.activeSelf)
         {
-            if (index == 0)
-            {
-                GameObject builder = GameStartManager.HumanBuilder;
-                Building building = builder.GetComponent<Build>().buildings[index].GetComponent<BuildingController>().building;
-                Unit unit = builder.GetComponent<Build>().buildings[index].GetComponent<Spawner>().unit.GetComponent<UnitController>().unit;
+            GameObject builder = GameStartManager.HumanBuilder;
+            Building building = builder.GetComponent<Build>().buildings[index].GetComponent<BuildingController>().building;
+            Unit unit = builder.GetComponent<Build>().buildings[index].GetComponent<Spawner>().unit.GetComponent<UnitController>().unit;
 
-                Transform buildingDetails = details.transform.Find("Building Details");
-                Transform unitDetails = details.transform.Find("Unit Details");
+            Transform buildingDetails = details.transform.Find("Building Details");
+            Transform unitDetails = details.transform.Find("Unit Details");
 
-                Text buildingName = details.transform.Find("Name").GetComponentInChildren<Text>();
-                Text buildingPrice = details.transform.Find("Price").GetComponentInChildren<Text>();
-                Text buildingHealth = buildingDetails.Find("Health").Find("Value").GetComponent<Text>();
-                Text buildingArmor = buildingDetails.Find("Armor").Find("Value").GetComponent<Text>();
+            Text buildingName = details.transform.Find("Name").GetComponentInChildren<Text>();
+            Text buildingPrice = details.transform.Find("Price").GetComponentInChildren<Text>();
+            Text buildingHealth = buildingDetails.Find("Health").Find("Value").GetComponent<Text>();
+            Text buildingArmor = buildingDetails.Find("Armor").Find("Value").GetComponent<Text>();
 
-                Text unitName = unitDetails.Find("Name").GetComponent<Text>();
-                Text unitSpawnRate = unitDetails.Find("Spawn Rate").GetComponent<Text>();
-                Text unitHealth = unitDetails.Find("Health").Find("Value").GetComponent<Text>();
-                Text unitArmor = unitDetails.Find("Armor").Find("Value").GetComponent<Text>();
-                Text unitDamage = unitDetails.Find("Attack Damage").Find("Value").GetComponent<Text>();
-                Text unitAttackSpeed = unitDetails.Find("Attack Speed").Find("Value").GetComponent<Text>();
-                Text unitRange = unitDetails.Find("Range").Find("Value").GetComponent<Text>();
+            Text unitName = unitDetails.Find("Name").GetComponent<Text>();
+            Text unitSpawnRate = unitDetails.Find("Spawn Rate").GetComponent<Text>();
+            Text unitHealth = unitDetails.Find("Health").Find("Value").GetComponent<Text>();
+            Text unitArmor = unitDetails.Find("Armor").Find("Value").GetComponent<Text>();
+            Text unitDamage = unitDetails.Find("Attack Damage").Find("Value").GetComponent<Text>();
+            Text unitAttackSpeed = unitDetails.Find("Attack Speed").Find("Value").GetComponent<Text>();
+            Text unitRange = unitDetails.Find("Range").Find("Value").GetComponent<Text>();
 
-                buildingName.text = building.name;
-                buildingPrice.text = building.cost + "g";
-                buildingHealth.text = building.health.ToString();
-                buildingArmor.text = building.armor.ToString();
+            buildingName.text = building.name;
+            buildingPrice.text = building.cost + "g";
+            buildingHealth.text = building.health.ToString();
+            buildingArmor.text = building.armor.ToString();
 
-                unitName.text = unit.name;
-                unitSpawnRate.text = (building.cost / 20 + 15) + "s";
-                unitHealth.text = unit.health.ToString();
-                unitArmor.text = unit.armor.ToString();
-                unitDamage.text = unit.attackDamage.ToString();
-                unitAttackSpeed.text = unit.attackSpeed.ToString();
-                unitRange.text = unit.range.ToString();
+            unitName.text = unit.name;
+            unitSpawnRate.text = (building.cost / 20 + 15) + "s";
+            unitHealth.text = unit.health.ToString();
+            unitArmor.text = unit.armor.ToString();
+            unitDamage.text = unit.attackDamage.ToString();
+            unitAttackSpeed.text = unit.attackSpeed.ToString();
+            unitRange.text = unit.range.ToString();
 
-                details.SetActive(true);
-            }
-            else
-            {
-                Debug.Log("To be implemented.");
-            }
+            details.SetActive(true);
         }
         else
         {

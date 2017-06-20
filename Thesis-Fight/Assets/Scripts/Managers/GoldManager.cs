@@ -57,7 +57,8 @@ public class GoldManager : MonoBehaviour {
 
     public void AddIncome(int playerID, int value)
     {
-        income[playerID] += (int)(value * incomePercentage);
+        float newIncome = value * incomePercentage;
+        income[playerID] += (int)newIncome;
         
         if (playerID == GameStartManager.HumanBuilderID)
         {

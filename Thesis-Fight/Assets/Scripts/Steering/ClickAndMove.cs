@@ -14,12 +14,15 @@ public class ClickAndMove : MonoBehaviour
     private FollowPath followPath;
     private Avoidance avoidance;
 
+    private Animator anim;
+
     private void Start()
     {
         selectionManager = GameObject.FindObjectOfType<SelectionManager>();
         steeringManager = GetComponent<SteeringManager>();
         followPath = GetComponent<FollowPath>();
         avoidance = GetComponent<Avoidance>();
+        anim = GetComponentInChildren<Animator>();
     }
 
     public void OnPathFound(Vector3[] path, bool success)
@@ -48,6 +51,8 @@ public class ClickAndMove : MonoBehaviour
 
     public IEnumerator Follow()
     {
+        anim.SetBool("Running", true);
+
         if (path != null)
         {
             Debug.Log("Following");
@@ -58,13 +63,21 @@ public class ClickAndMove : MonoBehaviour
                 {
                     accel = followPath.Follow(path);
                 }
-
+                
                 steeringManager.Steer(accel);
                 steeringManager.FaceMovementDirection();
+
+                if (accel == Vector3.zero)
+                {
+                    anim.SetBool("Running", false);
+                    yield break;
+                }
 
                 yield return null;
             }
         }
+
+        anim.SetBool("Running", false);
     }
 
     private void OnEnable()

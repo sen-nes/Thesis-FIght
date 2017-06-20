@@ -58,6 +58,11 @@ public class Build : MonoBehaviour {
                 {
                     BeginBuilding(1);
                 }
+
+                if (Input.GetKeyUp(KeyCode.E))
+                {
+                    BeginBuilding(2);
+                }
             }
         }
         else
