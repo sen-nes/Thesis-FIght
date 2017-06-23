@@ -1,6 +1,8 @@
 ﻿public enum ArmorTypes
 {
-    ROCK,
-    PAPER,
-    SCISSORS
+    UNARMORED = 0,
+    LIGHT,
+    MEDIUM,
+    HEAVY,
+    FORTIFIED
 }

@@ -15,29 +15,40 @@ public class SelectionManager : MonoBehaviour {
 
     private void Update()
     {
-        if (Input.GetMouseButtonUp((int)MouseButton.MB_LEFT) && !EventSystem.current.IsPointerOverGameObject() 
-            && !GameStartManager.HumanBuilder.GetComponent<Build>().isBuilding)
+        if (Input.GetKeyUp(KeyCode.Space))
         {
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            RaycastHit hit;
+            ClearSelection();
+            SelectObject(GameStartManager.HumanBuilder);
 
-            if (Physics.Raycast(ray, out hit, Mathf.Infinity, selectableMask))
-            {
-                // find correct root
-                SelectObject(hit.transform.gameObject);
-            }
-            else
-            {
-                ClearSelection();
-            }
+            CameraController cc = GameObject.FindObjectOfType<CameraController>();
+            cc.PanToObject(GameStartManager.HumanBuilder);
         }
         else
         {
-            // Setup a proper check
-            if (selectedObject == null)
+            if (Input.GetMouseButtonUp((int)MouseButton.MB_LEFT) && !EventSystem.current.IsPointerOverGameObject()
+            && !GameStartManager.HumanBuilder.GetComponent<Build>().isBuilding)
             {
-                ClearSelection();
-            } 
+                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+                RaycastHit hit;
+
+                if (Physics.Raycast(ray, out hit, Mathf.Infinity, selectableMask))
+                {
+                    // find correct root
+                    SelectObject(hit.transform.gameObject);
+                }
+                else
+                {
+                    ClearSelection();
+                }
+            }
+            else
+            {
+                // Setup a proper check
+                if (selectedObject == null)
+                {
+                    ClearSelection();
+                }
+            }
         }
     }
 
@@ -54,8 +65,7 @@ public class SelectionManager : MonoBehaviour {
                 ClearSelection();
             }
         }
-
-        Debug.Log(obj.name + " selected");
+        
         selectedObject = obj;
         hudManager.UpdateHUD(selectedObject);
     }

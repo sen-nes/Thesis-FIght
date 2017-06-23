@@ -5,7 +5,7 @@ using UnityEngine;
 public class CastleController : MonoBehaviour {
 
     public Castle castle;
-    public Team teamID;
+    public Teams teamID;
 
     private void Awake()
     {

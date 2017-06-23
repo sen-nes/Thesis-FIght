@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum Team
+public enum Teams
 {
     TEAM_EAST = 0,
     TEAM_WEST

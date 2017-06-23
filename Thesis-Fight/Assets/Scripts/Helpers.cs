@@ -32,9 +32,9 @@ public class Helpers {
     }
 }
 
-public enum MouseButtonDown
+public enum MouseButton
 {
-    MBD_LEFT = 0,
-    MBD_RIGHT,
-    MBD_MIDDLE,
+    MB_LEFT = 0,
+    MB_RIGHT,
+    MB_MIDDLE,
 }

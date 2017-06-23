@@ -8,7 +8,6 @@ public class AttackAnimationHandler : MonoBehaviour {
 
     private void Start()
     {
-        Debug.Log(name);
         attack = transform.parent.GetComponent<Attack>();
     }
 

@@ -48,6 +48,11 @@ public class Spawner : MonoBehaviour {
         unit.GetComponent<UnitController>().enemyCastle = GetComponent<BuildingController>().enemyCastle;
         unit.GetComponent<UnitController>().killValue = GetComponent<Attackable>().KillValue / 5;
 
+        if (!Grid.instance.NodeFromPoint(spawnPoint.position).walkable)
+        {
+            spawnPoint.position = Grid.instance.FindFreeNode((Teams)GetComponent<BuildingController>().teamID, spawnPoint.position);
+        }
+
         Instantiate(unit, spawnPoint.position, Quaternion.identity, unitParent);
     }
 
@@ -66,10 +71,22 @@ public class Spawner : MonoBehaviour {
         isSpawning = false;
     }
 
+    public Vector3 UpdateSpawnPoint()
+    {
+        spawnPoint.position = Grid.instance.FindFreeNode((Teams)GetComponent<BuildingController>().teamID, spawnPoint.position);
+
+        return spawnPoint.position;
+    }
+
+    private void OnDrawGizmos()
+    {
+        Gizmos.DrawCube(spawnPoint.position, Vector3.one);
+    }
+
     //public void UpdateGrid()
     //{
     //    Grid.instance.UpdateGridRegion(grid.sizeX, grid.sizeY, transform.position);
     //}
-    
+
     // Create separate component from placemnet grid
 }

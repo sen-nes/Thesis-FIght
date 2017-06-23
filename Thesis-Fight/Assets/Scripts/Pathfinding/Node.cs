@@ -6,6 +6,7 @@ using UnityEngine;
 public class Node : IHeapNode<Node>
 {
     public bool walkable;
+    public bool buildable;
     public Vector3 position;
     public int gridX;
     public int gridY;
@@ -27,9 +28,10 @@ public class Node : IHeapNode<Node>
 
     public int HeapIndex { get; set; }
 
-    public Node(bool _walkable, Vector3 _position, int _gridX, int _gridY)
+    public Node(bool _walkable, bool _buildable, Vector3 _position, int _gridX, int _gridY)
     {
         walkable = _walkable;
+        buildable = _buildable;
         position = _position;
         gridX = _gridX;
         gridY = _gridY;

@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -11,6 +12,7 @@ public class Grid : MonoBehaviour
     public float nodeSize;
 
     private int unwalkableMask;
+    private int notBuildableMask;
     private Node[,] grid;
     private float nodeRadius;
     private float radiusOffset;
@@ -34,16 +36,12 @@ public class Grid : MonoBehaviour
         instance = this;
 
         unwalkableMask = LayerMask.GetMask("Unwalkable");
+        notBuildableMask = LayerMask.GetMask("NotBuildable");
         nodeRadius = nodeSize / 2;
         radiusOffset = 0.01f;
         nodeCountX = Mathf.RoundToInt(gridSize.x / nodeSize);
         nodeCountY = Mathf.RoundToInt(gridSize.y / nodeSize);
         CreateGrid();
-    }
-
-    private void Update()
-    {
-        // UpdateGrid();
     }
 
     private void CreateGrid()
@@ -57,7 +55,8 @@ public class Grid : MonoBehaviour
             {
                 Vector3 point = bottomLeft + Vector3.right * (x * nodeSize + nodeRadius) + Vector3.forward * (y * nodeSize + nodeRadius);
                 bool walkable = !(Physics.CheckSphere(point, nodeRadius - radiusOffset, unwalkableMask));
-                grid[x, y] = new Node(walkable, point, x, y);
+                bool buildable = !(Physics.CheckSphere(point, nodeRadius - radiusOffset, notBuildableMask));
+                grid[x, y] = new Node(walkable, buildable, point, x, y);
             }
         }
     }
@@ -66,7 +65,7 @@ public class Grid : MonoBehaviour
     {
         foreach (Node node in grid)
         {
-            bool walkable = !(Physics.CheckSphere(node.position, nodeRadius, unwalkableMask));
+            bool walkable = !(Physics.CheckSphere(node.position, nodeRadius - radiusOffset, unwalkableMask));
             node.walkable = walkable;
         }
     }
@@ -106,20 +105,7 @@ public class Grid : MonoBehaviour
 
         return neighbours;
     }
-
-    private void OnDrawGizmos()
-    {
-        Gizmos.DrawWireCube(transform.position, new Vector3(gridSize.x, 1f, gridSize.y));
-        if (grid != null && drawGizmos)
-        {
-            foreach (Node node in grid)
-            {
-                Gizmos.color = (node.walkable ? Color.green : Color.red);
-                Gizmos.DrawWireCube(node.position, Vector3.one * (nodeSize - .1f));
-            }
-        }
-    }
-
+    
     public Node[,] Subgrid(int X, int Y, Vector3 pos)
     {
         Node[,] subGrid = new Node[X * 2 + 1, Y * 2 + 1];
@@ -143,6 +129,30 @@ public class Grid : MonoBehaviour
                 
             }
         }
+
+        return subGrid;
+    }
+
+    public Node[,] GetTeamArea(Teams team)
+    {
+        int length = 60;
+        int X = 0;
+        if (team == Teams.TEAM_EAST)
+        {
+            X = (int)gridSize.x - length;
+        }
+        
+        Node[,] subGrid = new Node[length, (int)gridSize.y];
+
+
+        for (int y = 0; y < (int)gridSize.y; y++)
+        {
+            for (int x = X; x < X + length; x++)
+            {
+                subGrid[x - X, y] = grid[x, y];
+            }
+        }
+
 
         return subGrid;
     }
@@ -174,7 +184,6 @@ public class Grid : MonoBehaviour
 
     public bool CheckGridRegion(int X, int Y, Vector3 pos)
     {
-        Debug.Log(X + ", " + Y);
         Node placementNode = NodeFromPoint(pos);
 
         for (int x = -X; x <= X; x++)
@@ -184,12 +193,103 @@ public class Grid : MonoBehaviour
                 int neighX = placementNode.gridX + x;
                 int neighY = placementNode.gridY + y;
 
-                if (!grid[neighX, neighY].walkable) {
+                if (neighX >= 0 && neighX < nodeCountX && neighY >= 0 && neighY < nodeCountY)
+                {
+                    if (!grid[neighX, neighY].walkable || !grid[neighX, neighY].buildable)
+                    {
+                        return false;
+                    }
+                }
+                else
+                {
                     return false;
                 }
+                
             }
         }
 
         return true;
+    }
+
+    public Vector3 FindFreeNode(Teams team, Vector3 pos)
+    {
+        Node startingNode = NodeFromPoint(pos);
+        Node[,] spawningArea = GetTeamArea(team);
+        int length = spawningArea.GetLength(1);
+
+        int Y = startingNode.gridY;
+        int X = startingNode.gridX;
+        if (X >= 290) {
+            X -= 290;
+        }
+        
+        for (int c = 1; c <= length / 2; c++)
+        {
+            for (int x = -c; x <= c; x++)
+            {
+                int checkX = X + x;
+                int checkY = Y + c;
+
+                if (checkX >= 0 && checkX < nodeCountX && checkY >= 0 && checkY < nodeCountY)
+                {
+                    if (spawningArea[checkX, checkY].walkable)
+                    {
+                        return spawningArea[checkX, checkY].position;
+                    }
+                }
+
+                checkX = X + x;
+                checkY = Y - c;
+
+                if (checkX >= 0 && checkX < nodeCountX && checkY >= 0 && checkY < nodeCountY)
+                {
+                    if (spawningArea[checkX, checkY].walkable)
+                    {
+                        return spawningArea[checkX, checkY].position;
+                    }
+                }
+            }
+
+            for (int y = -c; y <= c; y++)
+            {
+                int checkX = X + c;
+                int checkY = Y + y;
+
+                if (checkX >= 0 && checkX < nodeCountX && checkY >= 0 && checkY < nodeCountY)
+                {
+                    if (spawningArea[checkX, checkY].walkable)
+                    {
+                        return spawningArea[checkX, checkY].position;
+                    }
+                }
+
+                checkX = X - c;
+                checkY = Y + y;
+
+                if (checkX >= 0 && checkX < nodeCountX && checkY >= 0 && checkY < nodeCountY)
+                {
+                    if (spawningArea[checkX, checkY].walkable)
+                    {
+                        return spawningArea[checkX, checkY].position;
+                    }
+                }
+            }
+        }
+
+        return Vector3.zero;
+    }
+
+    private void OnDrawGizmos()
+    {
+        Gizmos.DrawWireCube(transform.position, new Vector3(gridSize.x, 1f, gridSize.y));
+        if (grid != null && drawGizmos)
+        {
+            foreach (Node node in grid)
+            {
+                Gizmos.color = (node.walkable ? Color.green : Color.red);
+
+                Gizmos.DrawWireCube(node.position, Vector3.one * (nodeSize - .1f));
+            }
+        }
     }
 }

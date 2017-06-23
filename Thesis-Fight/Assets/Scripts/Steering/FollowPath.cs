@@ -5,8 +5,10 @@ using UnityEngine;
 [RequireComponent(typeof(SteeringManager))]
 public class FollowPath : MonoBehaviour {
 
-    public float stopRadius = 0.005f;
+    public float stopRadius = 0.05f;
     public float turnRadius = 0.5f;
+
+    public bool hasArrived;
     
     private Rigidbody rb;
     private SteeringManager steeringManager;
@@ -19,10 +21,18 @@ public class FollowPath : MonoBehaviour {
 
     public Vector3 Follow(StackPath path)
     {
+        hasArrived = false;
+
         // Throws a nullPointer exception when target position is in the grass
+        if (GameStartManager.HumanBuilder == gameObject)
+        {
+            Debug.Log(Vector3.Distance(transform.position, path.Last));
+        }
         if (Vector3.Distance(transform.position, path.Last) < stopRadius)
         {
             rb.velocity = Vector3.zero;
+            hasArrived = true;
+            Debug.Log("Arrive");
             return Vector3.zero;
         }
 

@@ -5,6 +5,7 @@ using UnityEngine.UI;
 
 public class HUDManager : MonoBehaviour {
 
+    public GameObject topPanel;
     public GameObject builderPanel;
     public GameObject buildingPanel;
     public GameObject unitPanel;
@@ -12,6 +13,19 @@ public class HUDManager : MonoBehaviour {
 
     private GameObject activePanel;
     private Spawner spawner;
+
+    private void Start()
+    {
+        InvokeRepeating("KeepTrackOfTime", 0f, 1f);
+    }
+
+    public void KeepTrackOfTime()
+    {
+        Text currentTime = topPanel.transform.Find("Time").GetComponentInChildren<Text>();
+        string minutes = ((int)(Time.time / 60)).ToString().PadLeft(2, '0');
+        string seconds = ((int)(Time.time % 60)).ToString().PadLeft(2, '0');
+        currentTime.text = minutes + " : " + seconds;
+    }
 
     public void UpdateHUD(GameObject selectedObject)
     {
@@ -71,7 +85,7 @@ public class HUDManager : MonoBehaviour {
         Text health = activePanel.transform.Find("Stats").Find("Healthbar").Find("Value").GetComponent<Text>();
         Image healthbar = activePanel.transform.Find("Stats").Find("Healthbar").Find("Bar").GetComponent<Image>();
         
-        if (attackable.teamID == Team.TEAM_EAST)
+        if (attackable.teamID == Teams.TEAM_EAST)
         {
             name.text = "Castle East";
         }

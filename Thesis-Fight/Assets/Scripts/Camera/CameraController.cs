@@ -2,13 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-enum MouseButton
-{
-    MB_LEFT = 0,
-    MB_RIGHT,
-    MB_MIDDLE,
-};
-
 public class CameraController : MonoBehaviour
 {
 
@@ -41,6 +34,11 @@ public class CameraController : MonoBehaviour
     private void Update()
     {
         mouseEvent();
+    }
+
+    public void PanToObject(GameObject obj)
+    {
+        focusObject.transform.position = obj.transform.position;
     }
 
     private void mouseEvent()

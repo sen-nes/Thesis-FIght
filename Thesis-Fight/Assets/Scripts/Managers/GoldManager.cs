@@ -45,7 +45,7 @@ public class GoldManager : MonoBehaviour {
 
         for (int i = 0; i < playerCount; i++)
         {
-            income[0] = startingIncome;
+            income[i] = startingIncome;
             gold[i] = startingGold;
         }
 
@@ -109,8 +109,8 @@ public class GoldManager : MonoBehaviour {
             gold[i] += income[i];
         }
 
-        StartCoroutine(ShowIncome());
         currentGold.text = gold[GameStartManager.HumanBuilderID].ToString();
+        StartCoroutine(ShowIncome());
     }
 
     public IEnumerator ShowIncome()

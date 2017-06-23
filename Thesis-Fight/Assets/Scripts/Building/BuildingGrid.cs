@@ -22,17 +22,6 @@ public class BuildingGrid : MonoBehaviour
     }
 
 
-    // What is the check in Update for?
-
-    //private void Update()
-    //{
-    //    Node currentNode = Grid.instance.NodeFromPoint(transform.position);
-    //    if (grid[sizeX, sizeY] != currentNode)
-    //    {
-    //        UpdateGrid();
-    //    }
-    //}
-
     private void InstantiateGrid()
     {
         gridParent = transform.Find("Grid");
@@ -57,7 +46,7 @@ public class BuildingGrid : MonoBehaviour
         {
             for (int y = 0; y < sizeY * 2 + 1; y++)
             {
-                if (grid[x, y] != null && !grid[x, y].walkable)
+                if (grid[x, y] != null && (!grid[x, y].walkable || !grid[x, y].buildable))
                 {
                     buildingGrid[x, y].SetActive(true);
                     // buildingGrid[x, y].transform.position = grid[x, y].position + offset;
@@ -72,14 +61,14 @@ public class BuildingGrid : MonoBehaviour
         }
 
         // Extents or size
-        return CheckPlacement(tr.GetComponent<Collider>().bounds.extents);
+        return CheckPlacement(tr.Find("Model").GetComponent<Collider>().bounds.size);
     }
 
-    private bool CheckPlacement(Vector3 extents)
+    private bool CheckPlacement(Vector3 size)
     {
         bool canBuild = true;
 
-        float tmp = extents.x;
+        float tmp = size.x;
         int X = (int)(tmp / 2);
         if ((int)tmp % 2 == 1)
         {
@@ -89,7 +78,7 @@ public class BuildingGrid : MonoBehaviour
             }
         }
 
-        tmp = extents.z;
+        tmp = size.z;
         int Y = (int)(tmp / 2);
         if ((int)tmp % 2 == 1)
         {
@@ -112,7 +101,7 @@ public class BuildingGrid : MonoBehaviour
                     buildingGrid[checkX, checkY].transform.position = grid[checkX, checkY].position + offset;
 
                     Color buildable;
-                    if (grid[checkX, checkY].walkable)
+                    if (grid[checkX, checkY].walkable && grid[checkX, checkY].buildable)
                     {
                         buildable = Color.green;
                     }
@@ -131,6 +120,11 @@ public class BuildingGrid : MonoBehaviour
         }
 
         return canBuild;
+    }
+
+    public void UpdateWorldGrid()
+    {
+        Grid.instance.UpdateGridRegion(sizeX, sizeY, transform.position);
     }
 
     public void Show()

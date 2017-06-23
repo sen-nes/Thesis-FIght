@@ -45,8 +45,24 @@ public class ClickAndMove : MonoBehaviour
     {
         if (selectionManager.selectedObject == this.gameObject && Input.GetMouseButtonUp((int)MouseButton.MB_RIGHT))
         {
-            PathRequestManager.RequestPath(new PathRequest(transform.position, Helpers.RaycastFloor(LayerMask.GetMask("Floor")), OnPathFound));
+            GetComponent<Build>().CancelBuildingTask();
+            CancelPath();
+            RequestPathToLocation(Helpers.RaycastFloor(LayerMask.GetMask("Floor")));
         }
+    }
+
+    public void RequestPathToLocation(Vector3 loc)
+    {
+        StopAllCoroutines();
+        PathRequestManager.RequestPath(new PathRequest(transform.position, loc, OnPathFound));
+    }
+
+    public void CancelPath()
+    {
+        StopAllCoroutines();
+        path = null;
+        GetComponent<Rigidbody>().velocity = Vector3.zero;
+        anim.SetBool("Running", false);
     }
 
     public IEnumerator Follow()
@@ -55,42 +71,30 @@ public class ClickAndMove : MonoBehaviour
 
         if (path != null)
         {
-            Debug.Log("Following");
             while (true)
             {
-                Vector3 accel = avoidance.Avoid();
-                if (accel.magnitude < 0.005f)
-                {
-                    accel = followPath.Follow(path);
-                }
-                
-                steeringManager.Steer(accel);
-                steeringManager.FaceMovementDirection();
+                Vector3 follow = followPath.Follow(path);
 
-                if (accel == Vector3.zero)
+                if (followPath.hasArrived)
                 {
                     anim.SetBool("Running", false);
+                    Debug.Log("Stopped at " + transform.position + GetComponent<Rigidbody>().velocity);
                     yield break;
                 }
+
+                Vector3 avoid = avoidance.Avoid();
+
+                if (avoid.magnitude > 0.005f)
+                {
+                    follow = avoid;
+                }
+
+                steeringManager.Steer(follow);
+                steeringManager.FaceMovementDirection();
 
                 yield return null;
             }
         }
-
-        anim.SetBool("Running", false);
-    }
-
-    private void OnEnable()
-    {
-        if (path != null)
-        {
-            StartCoroutine(Follow());
-        }
-    }
-
-    private void OnDisable()
-    {
-        StopAllCoroutines();
     }
 
     private void OnDrawGizmos()

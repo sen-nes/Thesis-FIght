@@ -31,7 +31,7 @@ public class VictoryManager : MonoBehaviour {
     public void DeclareDefeat(int teamID)
     {
         victor = "Team East";
-        if (teamID == (int)Team.TEAM_EAST)
+        if (teamID == (int)Teams.TEAM_EAST)
         {
             victor = "Team West";
         }

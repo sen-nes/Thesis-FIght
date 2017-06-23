@@ -3,19 +3,22 @@
 public class GameStartManager : MonoBehaviour {
 
     public GameObject builder;
+    public GameObject bot;
 
     public static GameObject HumanBuilder { get; private set; }
     public static int HumanBuilderID { get; private set; }
 
-    public static int playerCount = 2;
+    public static int playerCount = 6;
     public Transform eastSpawn;
     public Transform westSpawn;
 
     private GameObject[] builders;
+    private Transform buildersParent;
 
     private void Awake()
     {
         builders = new GameObject[playerCount];
+        buildersParent = GameObject.Find("Builders").transform;
 
         Debug.Log("Players: " + playerCount);
         HumanBuilderID = Random.Range(0, playerCount - 1);
@@ -29,26 +32,36 @@ public class GameStartManager : MonoBehaviour {
     private void InstantiateBuilders()
     {
         GameObject castles = GameObject.Find("Castles");
+        GameObject newBuilder;
+
+        Vector3 offset = new Vector3(0.0f, 0.0f, 5.0f);
         for (int i = 0; i < playerCount; i++)
         {
-            // Check whether it's the human player
-
-            if ((i % 2) == 0)
+            if (i == HumanBuilderID)
             {
-                builder.transform.position = eastSpawn.position;
-                builder.GetComponent<BuilderController>().enemyCastle = castles.transform.Find("Castle West").Find("Attack Point").position;
+                newBuilder = builder;
             }
             else
             {
-                builder.transform.position = westSpawn.position;
-                builder.GetComponent<BuilderController>().enemyCastle = castles.transform.Find("Castle East").Find("Attack Point").position;
+                newBuilder = bot;
+            }
+
+            if ((i % 2) == 0)
+            {
+                newBuilder.transform.position = eastSpawn.position + (i / 2) * offset;
+                newBuilder.GetComponent<BuilderController>().enemyCastle = castles.transform.Find("Castle West").Find("Attack Point").position;
+            }
+            else
+            {
+                newBuilder.transform.position = westSpawn.position + (i / 2) * offset;
+                newBuilder.GetComponent<BuilderController>().enemyCastle = castles.transform.Find("Castle East").Find("Attack Point").position;
             }
 
             // Assign team in a different way
-            builder.GetComponent<BuilderController>().teamID = (Team)(i % 2);
-            builder.GetComponent<BuilderController>().playerID = i;
+            newBuilder.GetComponent<BuilderController>().teamID = (Teams)(i % 2);
+            newBuilder.GetComponent<BuilderController>().playerID = i;
 
-            builders[i] = Instantiate(builder);
+            builders[i] = Instantiate(newBuilder, buildersParent);
         }
     }
 }

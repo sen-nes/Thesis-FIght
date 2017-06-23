@@ -17,9 +17,8 @@ public class Attackable : MonoBehaviour
 
     public Priorities AttackPriority { get; set; }
     public int KillValue { get; set; }
-    public GameObject killGold;
 
-    public Team teamID;
+    public Teams teamID;
 
     private IBaseStats stats;
 
@@ -28,14 +27,15 @@ public class Attackable : MonoBehaviour
         stats = GetComponent<IBaseStats>();
 
         CurrentHealth = stats.Health.FinalValue;
-        Debug.Log("After instantiate: " + KillValue);
     }
 
-    public int TakeDamage(float amount)
+    public int TakeDamage(DamageTypes damageType, float amount)
     {
         // Perform type calculations
+        amount *=  ArmorTable.GetArmorModifier(damageType, stats.ArmorType);
+        float reduction = ArmorTable.GetDamageReduction(stats.Armor.FinalValue);
 
-        CurrentHealth -= amount;
+        CurrentHealth -= Mathf.RoundToInt(amount * reduction);
         healthbar.fillAmount = HealthPercentage;
 
         if (CurrentHealth <= 0)
@@ -60,10 +60,10 @@ public class Attackable : MonoBehaviour
             VictoryManager.instance.DeclareDefeat((int)teamID);
         }
 
-        // Show gold on death to human player only
-        Debug.Log(KillValue);
-        killGold.GetComponent<KillGold>().goldValue = KillValue;
-        Instantiate(killGold, GetComponent<Collider>().bounds.center, Quaternion.identity);
+        if (CompareTag("Building"))
+        {
+            Grid.instance.UpdateGridRegion((int)transform.Find("Model").GetComponent<Collider>().bounds.size.x + 1, (int)transform.Find("Model").GetComponent<Collider>().bounds.size.z + 1, transform.position);
+        }
 
         Destroy(gameObject);
     }

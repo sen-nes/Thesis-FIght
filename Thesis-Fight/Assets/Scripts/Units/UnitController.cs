@@ -10,7 +10,7 @@ public class UnitController : MonoBehaviour {
     public Unit unit;
     public Vector3 enemyCastle;
 
-    public Team teamID;
+    public Teams teamID;
     public int playerID;
     public int killValue;
 
@@ -39,6 +39,8 @@ public class UnitController : MonoBehaviour {
         fighterStats = GetComponent<FighterStats>();
         findTarget = GetComponent<FindTarget>();
 
+        steeringManager.maxVelocity = fighterStats.MovementSpeed.FinalValue;
+
         PathRequestManager.RequestPath(new PathRequest(transform.position, enemyCastle, OnPathFound));
     }
 
@@ -63,29 +65,20 @@ public class UnitController : MonoBehaviour {
         {
             if (path != null)
             {
-                //Vector3 accel;
-                //if (Time.frameCount % 10 == 0)
-                //{
-                //    accel = avoidance.Avoid();
-                //}
-                //else
-                //{
-                //    accel = Vector3.zero;
-                //}
-
-                //if (accel.magnitude < 0.005f)
-                //{
-
-                //}
-
-                //Vector3 accel = followPath.Follow(path);
-
-                Vector3 accel = avoidance.Avoid();
-                if (accel.magnitude < 0.005f)
+                Vector3 accel;
+                if (Time.frameCount % 5 == 0)
+                {
+                    accel = avoidance.Avoid();
+                    if (accel.magnitude < 0.005f)
+                    {
+                        accel = followPath.Follow(path);
+                    }
+                }
+                else
                 {
                     accel = followPath.Follow(path);
                 }
-
+                
                 steeringManager.Steer(accel);
                 steeringManager.FaceMovementDirection();
             }

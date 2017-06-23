@@ -6,6 +6,7 @@ using UnityEngine;
 public class Attack : MonoBehaviour {
 
     public bool stationary;
+    public GameObject killGold;
 
     private Rigidbody rb;
     private SteeringManager steeringManager;
@@ -83,14 +84,28 @@ public class Attack : MonoBehaviour {
     {
         // Cache references
         Attackable attackable = findTarget.target.GetComponent<Attackable>();
+
         float damage = fighterStats.AttackDamage.FinalValue;
+        float critChance = fighterStats.CriticalChance.FinalValue;
+        bool criticalHit = Random.value <= critChance;
+        if (criticalHit)
+        {
+            damage *= fighterStats.CriticalDamage.FinalValue;
+        }
 
         // Damage/Armor types
-        int plunder = attackable.TakeDamage(damage);
+        int plunder = attackable.TakeDamage(fighterStats.DamageType, damage);
         if (plunder > 0)
         {
             // Cache playerID
             GoldManager.instance.AddGold(GetComponent<UnitController>().playerID, plunder);
+            if (GetComponent<UnitController>().playerID == GameStartManager.HumanBuilderID)
+            {
+                // Show gold on death to human player only
+                killGold.GetComponent<KillGold>().goldValue = plunder;
+                Instantiate(killGold, findTarget.target.GetComponent<Collider>().bounds.center, Quaternion.identity);
+            }
+
             findTarget.target = null;
         }
     }

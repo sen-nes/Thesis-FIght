@@ -5,7 +5,7 @@ using UnityEngine;
 public class BuildingController : MonoBehaviour {
 
     public Building building;
-    public Team teamID;
+    public Teams teamID;
     public int playerID;
     public Vector3 enemyCastle;
 

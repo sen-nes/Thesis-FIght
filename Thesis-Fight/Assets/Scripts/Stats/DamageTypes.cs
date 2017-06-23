@@ -1,6 +1,10 @@
 ﻿public enum DamageTypes
 {
-    ROCK,
-    PAPER,
-    SCISSORS
+    NORMAL = 0,
+    PIERCE,
+    MAGIC,
+    CHAOS,
+    SIEGE,
+    HERO,
+    SPELLS
 }

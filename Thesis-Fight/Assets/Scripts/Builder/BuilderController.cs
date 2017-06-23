@@ -4,9 +4,8 @@ using UnityEngine;
 
 public class BuilderController : MonoBehaviour {
 
-	public Team teamID;
+	public Teams teamID;
     public int playerID;
     public Vector3 enemyCastle;
-
     // Repair
 }
