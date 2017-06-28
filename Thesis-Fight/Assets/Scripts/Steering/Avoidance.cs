@@ -29,7 +29,7 @@ public class Avoidance : MonoBehaviour {
         Vector3[] rayDirs = new Vector3[3];
 
         // Is this calculated correctly
-        // Throws a Object reference not set to an instance of an object exception at times.
+        // Throws an Object reference not set to an instance of an object exception at times.
         // Happened when units were circling around the wall and destroying enemy structures and castle.
         float orientation = Mathf.Atan2(rb.velocity.z, rb.velocity.x);
 
@@ -49,13 +49,13 @@ public class Avoidance : MonoBehaviour {
         Vector3 cross = Vector3.Cross(rb.velocity, hit.normal);
         if (cross.magnitude < 0.005f)
         {
-            // Why x and z are swapped
+            // Why are x and z swapped
             targetPosition += new Vector3(-hit.normal.z, hit.normal.y, hit.normal.x);
         }
 
         // Take into account avoidance force
         return steeringManager.Seek(targetPosition, maxAcceleration);
-    }
+    }   
 
     private Vector3 OrientationToVector(float orientation)
     {
@@ -71,7 +71,6 @@ public class Avoidance : MonoBehaviour {
         for (int i = 0; i < rayDirs.Length; i++)
         {
             float dist = (i == 0) ? checkAhead : checkSides;
-            Debug.DrawLine(transform.position, transform.position + rayDirs[i].normalized * dist, Color.red);
 
             RaycastHit hit;
             if (Physics.Raycast(transform.position, rayDirs[i], out hit, dist))

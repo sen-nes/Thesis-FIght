@@ -33,7 +33,7 @@ public class SteeringManager : MonoBehaviour
     public Vector3 SeekMouse()
     {
         // Cache layer mask
-        Vector3 mouse = Helpers.RaycastFloor(LayerMask.GetMask("Floor"));
+        Vector3 mouse = Helpers.RaycastFloor();
 
         return Seek(mouse);
     }
@@ -63,7 +63,7 @@ public class SteeringManager : MonoBehaviour
     public Vector3 ArriveAtMouse()
     {
         // Cache layer mask
-        Vector3 mouse = Helpers.RaycastFloor(LayerMask.GetMask("Floor"));
+        Vector3 mouse = Helpers.RaycastFloor();
 
         return Arrive(mouse);
     }

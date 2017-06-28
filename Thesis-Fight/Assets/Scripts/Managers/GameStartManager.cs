@@ -65,3 +65,9 @@ public class GameStartManager : MonoBehaviour {
         }
     }
 }
+
+public enum Teams
+{
+    TEAM_EAST = 0,
+    TEAM_WEST    
+}

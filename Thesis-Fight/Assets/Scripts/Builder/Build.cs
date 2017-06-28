@@ -18,6 +18,7 @@ public class Build : MonoBehaviour {
     private BuildingGrid buildingGrid;
 
     private Material[] buildingMaterials;
+    private Renderer[] rends;
 
     // Set in inspector or set in code?
     public Material buildingOK;
@@ -143,24 +144,27 @@ public class Build : MonoBehaviour {
             currentBuilding = Instantiate(building, buildPoint, Quaternion.identity, buildingsParent);
 
             // Renderer or MeshRenderer
-            buildingMaterials = currentBuilding.GetComponentInChildren<Renderer>().materials;
+            rends = currentBuilding.GetComponentsInChildren<Renderer>();
+            buildingMaterials = new Material[rends.Length];
+            for (int i = 0; i < rends.Length; i++)
+            {
+                buildingMaterials[i] = rends[i].material;
+            }
 
             buildingGrid.Show();
             // Update material accordingly
             if (buildingGrid.UpdateGrid(currentBuilding.transform))
             {
-                var materials = currentBuilding.GetComponentInChildren<Renderer>().materials;
-                for (int i = 0; i < materials.Length; i++)
+                for (int i = 0; i < rends.Length; i++)
                 {
-                    materials[i] = buildingOK;
+                    rends[i].material = buildingOK;
                 }
             }
             else
             {
-                var materials = currentBuilding.GetComponentInChildren<Renderer>().materials;
-                for (int i = 0; i < materials.Length; i++)
+                for (int i = 0; i < rends.Length; i++)
                 {
-                    materials[i] = buildingError;
+                    rends[i].material = buildingError;
                 }
             }
             
@@ -187,18 +191,16 @@ public class Build : MonoBehaviour {
             // Update material accordingly
             if (buildingGrid.UpdateGrid(currentBuilding.transform))
             {
-                var materials = currentBuilding.GetComponentInChildren<Renderer>().materials;
-                for (int i = 0; i < materials.Length; i++)
+                for (int i = 0; i < rends.Length; i++)
                 {
-                    materials[i] = buildingOK;
+                    rends[i].material = buildingOK;
                 }
             }
             else
             {
-                var materials = currentBuilding.GetComponentInChildren<Renderer>().materials;
-                for (int i = 0; i < materials.Length; i++)
+                for (int i = 0; i < rends.Length; i++)
                 {
-                    materials[i] = buildingError;
+                    rends[i].material = buildingError;
                 }
             }
 
@@ -230,7 +232,11 @@ public class Build : MonoBehaviour {
             buildingGrid.Hide();
 
             // Renderer or MeshRenderer
-            currentBuilding.GetComponentInChildren<Renderer>().materials = buildingMaterials;
+            for (int i = 0; i < rends.Length; i++)
+            {
+                rends[i].material = buildingMaterials[i];
+            }
+
             currentBuilding.layer = combatLayer;
             currentBuilding.GetComponent<Spawner>().StartSpawning();
 
@@ -272,7 +278,7 @@ public class Build : MonoBehaviour {
     {
         // Think of a neater way to ensure you are getting discernible feedback
         // Cache layer mask
-        Vector3 buildPoint = Helpers.RaycastFloor(LayerMask.GetMask("Floor"));
+        Vector3 buildPoint = Helpers.RaycastFloor();
         buildPoint = Grid.instance.NodeFromPoint(buildPoint).position;
 
         return buildPoint;

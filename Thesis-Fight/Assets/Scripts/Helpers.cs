@@ -2,15 +2,15 @@
 
 public class Helpers {
 
-    private static int floorMask;
+    private static int floorMask = LayerMask.GetMask("Floor");
 
     // Remove layer parameter and update code references
-    public static Vector3 RaycastFloor(LayerMask layer)
+    public static Vector3 RaycastFloor()
     {
         Ray camRay = Camera.main.ScreenPointToRay(Input.mousePosition);
         RaycastHit hit;
         
-        if (Physics.Raycast(camRay, out hit, Mathf.Infinity, layer))
+        if (Physics.Raycast(camRay, out hit, Mathf.Infinity, floorMask))
         {
             return hit.point;
         }

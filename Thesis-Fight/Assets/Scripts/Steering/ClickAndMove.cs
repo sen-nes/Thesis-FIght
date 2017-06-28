@@ -47,7 +47,7 @@ public class ClickAndMove : MonoBehaviour
         {
             GetComponent<Build>().CancelBuildingTask();
             CancelPath();
-            RequestPathToLocation(Helpers.RaycastFloor(LayerMask.GetMask("Floor")));
+            RequestPathToLocation(Helpers.RaycastFloor());
         }
     }
 

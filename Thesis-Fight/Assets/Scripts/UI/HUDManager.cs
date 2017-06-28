@@ -82,6 +82,7 @@ public class HUDManager : MonoBehaviour {
 
         Text name = activePanel.transform.Find("Name").GetComponentInChildren<Text>();
         Text armor = activePanel.transform.Find("Stats").Find("Armor").Find("Value").GetComponent<Text>();
+        Text armorType = activePanel.transform.Find("Stats").Find("Armor").Find("Type").GetComponent<Text>();
         Text health = activePanel.transform.Find("Stats").Find("Healthbar").Find("Value").GetComponent<Text>();
         Image healthbar = activePanel.transform.Find("Stats").Find("Healthbar").Find("Bar").GetComponent<Image>();
         
@@ -94,7 +95,9 @@ public class HUDManager : MonoBehaviour {
             name.text = "Castle West";
         }
 
-        while(true)
+        armorType.text = "(" + stats.ArmorType.ToString().ToLower() + ")";
+
+        while (true)
         {
             health.text = attackable.CurrentHealth + " / " + stats.Health.FinalValue;
             healthbar.fillAmount = attackable.HealthPercentage;
@@ -126,16 +129,28 @@ public class HUDManager : MonoBehaviour {
 
     private IEnumerator UpdateBuildingHUD(GameObject obj)
     {
+        GameObject prodPanel = activePanel.transform.Find("Production").gameObject;
         Attackable attackable = obj.GetComponent<Attackable>();
         StructureStats stats = obj.GetComponent<StructureStats>();
 
         Text name = activePanel.transform.Find("Name").GetComponentInChildren<Text>();
         Text armor = activePanel.transform.Find("Stats").Find("Armor").Find("Value").GetComponent<Text>();
+        Text armorType = activePanel.transform.Find("Stats").Find("Armor").Find("Type").GetComponent<Text>();
         Text health = activePanel.transform.Find("Stats").Find("Healthbar").Find("Value").GetComponent<Text>();
         Image healthbar = activePanel.transform.Find("Stats").Find("Healthbar").Find("Bar").GetComponent<Image>();
         Image progressBar = activePanel.transform.Find("Production").Find("Progress Bar").Find("Bar").GetComponent<Image>();
 
+        if (obj.GetComponent<BuildingController>().playerID != GameStartManager.HumanBuilderID)
+        {
+            prodPanel.SetActive(false);
+        }
+        else
+        {
+            prodPanel.SetActive(true);
+        }
+
         name.text = obj.GetComponent<BuildingController>().building.name;
+        armorType.text = "(" + stats.ArmorType.ToString().ToLower() + ")";
 
         while (true)
         {
@@ -156,16 +171,22 @@ public class HUDManager : MonoBehaviour {
 
         Text name = activePanel.transform.Find("Name").GetComponentInChildren<Text>();
         Text armor = activePanel.transform.Find("Center Panel").Find("Armor").Find("Value").GetComponent<Text>();
+        Text armorType = activePanel.transform.Find("Center Panel").Find("Armor").Find("Type").GetComponent<Text>();
         Text health = activePanel.transform.Find("Center Panel").Find("Healthbar").Find("Value").GetComponent<Text>();
         Image healthbar = activePanel.transform.Find("Center Panel").Find("Healthbar").Find("Bar").GetComponent<Image>();
 
         Text attackDamage = activePanel.transform.Find("Left Panel").Find("Attack Damage").Find("Value").GetComponent<Text>();
+        Text attackDamageType = activePanel.transform.Find("Left Panel").Find("Attack Damage").Find("Type").GetComponent<Text>();
         Text attackSpeed = activePanel.transform.Find("Left Panel").Find("Attack Speed").Find("Value").GetComponent<Text>();
+        Text critChance = activePanel.transform.Find("Left Panel").Find("Critical Chance").Find("Value").GetComponent<Text>();
         Text range = activePanel.transform.Find("Left Panel").Find("Range").Find("Value").GetComponent<Text>();
 
         // Armor/Damage type
 
         name.text = obj.GetComponent<UnitController>().unit.name;
+
+        attackDamageType.text = "(" + stats.DamageType.ToString().ToLower() + ")";
+        armorType.text = "(" + stats.ArmorType.ToString().ToLower() + ")";
 
         while (true)
         {
@@ -175,6 +196,7 @@ public class HUDManager : MonoBehaviour {
 
             attackDamage.text = stats.AttackDamage.FinalValue.ToString();
             attackSpeed.text = (1f / stats.AttackSpeed.FinalValue).ToString();
+            critChance.text = (stats.CriticalChance.FinalValue * 100) + " %";
             range.text = stats.Range.FinalValue.ToString();
 
             yield return null;
